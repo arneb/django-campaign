@@ -9,13 +9,91 @@ from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
+from django.utils import simplejson as json
 
 from campaign.models import MailTemplate, Subscriber, Campaign, BlacklistEntry, BounceEntry
+from campaign.forms import UploadForm
 
-admin.site.register(MailTemplate)
-admin.site.register(Subscriber)
-admin.site.register(BlacklistEntry)
-admin.site.register(BounceEntry)
+
+class SubscriberAdmin(admin.ModelAdmin):
+    
+    import_template=None
+    
+    def has_import_permission(self, request):
+        """
+        TODO: integrate with django's permission system
+        """
+        return request.user.is_superuser
+        
+    def import_view(self, request, extra_context=None):
+        """
+        Import email addresses and salutation from a uploaded text file.
+        """
+        model = self.model
+        opts = model._meta
+        
+        if not self.has_import_permission(request):
+            raise PermissionDenied
+
+        if request.method == 'POST':
+            form = UploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                data = json.loads(form.cleaned_data['file'].read())
+                num_import = 0
+                for entry in data:
+                    try:
+                        Subscriber.objects.create(email=entry['email'], salutation=entry['name'])
+                        num_import += 1
+                    except Exception, e:
+                        pass
+                request.user.message_set.create(message=_(u'Successfully imported  %(num_import)s %(name)s.' %  {'name': force_unicode(opts.verbose_name_plural), 'num_import': num_import,}))
+                return HttpResponseRedirect('../')
+                        
+        else:
+            form = UploadForm()
+
+        def form_media():
+            from django.conf import settings
+            css = ['css/forms.css',]
+            return forms.Media(css={'screen': ['%s%s' % (settings.ADMIN_MEDIA_PREFIX, url) for url in css]})
+
+        media = self.media + form_media()
+        context = {
+            'title': _('Import %s') % force_unicode(opts.verbose_name_plural),
+            'is_popup': request.REQUEST.has_key('_popup'),
+            'media': mark_safe(media),
+            'root_path': self.admin_site.root_path,
+            'app_label': opts.app_label,
+            'opts': opts,
+            'form': form,
+        }
+
+        context.update(extra_context or {})
+        return render_to_response(self.import_template or
+            ['admin/%s/%s/import.html' % (opts.app_label, opts.object_name.lower()),
+            'admin/%s/import.html' % opts.app_label,
+            'admin/import.html'], context, context_instance=template.RequestContext(request))
+
+    
+    def get_urls(self):
+        from django.conf.urls.defaults import patterns, url
+
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(view)(*args, **kwargs)
+            return update_wrapper(wrapper, view)
+
+        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
+
+        super_urlpatterns = super(SubscriberAdmin, self).get_urls()
+        urlpatterns = patterns('',
+            url(r'^import/$',
+                wrap(self.import_view),
+                name='%sadmin_%s_%s_import' % info),
+        )
+        urlpatterns += super_urlpatterns
+
+        return urlpatterns    
 
 class CampaignAdmin(admin.ModelAdmin):
     filter_horizontal=('recipients',)
@@ -107,3 +185,7 @@ class CampaignAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Campaign, CampaignAdmin)
+admin.site.register(MailTemplate)
+admin.site.register(Subscriber, SubscriberAdmin)
+admin.site.register(BlacklistEntry)
+admin.site.register(BounceEntry)

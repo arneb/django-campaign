@@ -33,7 +33,7 @@ class Recipient(models.Model):
     
     """
     user = models.ForeignKey(User, blank=True, null=True, verbose_name=_(u"User"))
-    email = models.EmailField(_(u"email address"), blank=True)
+    email = models.EmailField(_(u"email address"), blank=True, unique=True)
     salutation = models.CharField(_(u"salutation"), blank=True, null=True, max_length=255)
     added = models.DateTimeField(_(u"added"), editable=False)
     
@@ -43,7 +43,7 @@ class Recipient(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.added = datetime.now()
-        if self.user is not None and self.email is None:
+        if self.user is not None and not self.email:
             self.email = self.user.email
         return super(Recipient, self).save(*args, **kwargs)
     
