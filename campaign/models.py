@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage, SMTPConnection, EmailMultiAlternatives
-
+from campaign.queue import SMTPQueue, SMTPLoggingConnection
 
 class MailTemplate(models.Model):
     """
@@ -77,32 +77,51 @@ class Campaign(models.Model):
     def __unicode__(self):
         return self.name
         
+        
     def send(self):
         """
         Sends the mails to the recipients.
         """
-        connection = SMTPConnection()
+        connection = SMTPLoggingConnection()
+        num_sent = self._send(connection)
+        self.sent = True
+        self.save()
+        return num_sent
         
+        
+    def _send(self, connection):
+        """
+        Does the actual work
+        """    
         subject = self.template.subject
         text_template = template.Template(self.template.plain)
         html_template = template.Template(self.template.html)
         
+        sent = 0
         for recipient in self.recipients.all():
-            msg = EmailMultiAlternatives(subject, connection=connection, to=[recipient.email,])
-            msg.body = text_template.render(template.Context({'salutation': recipient.salutation,}))
-            html_content = html_template.render(template.Context({'salutation': recipient.salutation,}))
-            msg.attach_alternative(html_content, 'text/html')
-            msg.send()
-            #print "sent one message to %s" % recipient
-        
-        self.sent = True
-        self.save()
-        #print "finished"    
+            # never send mail to blacklisted email addresses
+            if not BlacklistEntry.objects.filter(email=recipient.email).count():
+                msg = EmailMultiAlternatives(subject, connection=connection, to=[recipient.email,])
+                msg.body = text_template.render(template.Context({'salutation': recipient.salutation,}))
+                html_content = html_template.render(template.Context({'salutation': recipient.salutation,}))
+                msg.attach_alternative(html_content, 'text/html')
+                sent += msg.send()
+        return sent
 
 
-class Blacklisted(Recipient):
+
+
+class BlacklistEntry(Recipient):
     """
     If a user has requested removal from the subscriber-list, he is added
     to the blacklist to prevent accidential adding of the same user again.
     """
+
+        
+
+class BounceEntry(Recipient):
+    """
+    Records bouncing Recipients. To be processed by a human.
+    """
+    exception = models.TextField(_(u"exception"), blank=True, null=True)
     

@@ -10,11 +10,12 @@ from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 
-from campaign.models import MailTemplate, Subscriber, Campaign, Blacklisted
+from campaign.models import MailTemplate, Subscriber, Campaign, BlacklistEntry, BounceEntry
 
 admin.site.register(MailTemplate)
 admin.site.register(Subscriber)
-admin.site.register(Blacklisted)
+admin.site.register(BlacklistEntry)
+admin.site.register(BounceEntry)
 
 class CampaignAdmin(admin.ModelAdmin):
     filter_horizontal=('recipients',)
@@ -54,8 +55,8 @@ class CampaignAdmin(admin.ModelAdmin):
             if not request.POST.get('send', None) == '1':
                 raise PermissionDenied
             
-            obj.send()
-            request.user.message_set.create(message=_(u'The %(name)s "%(obj)s" was successfully sent.' %  {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj)}))
+            num_sent = obj.send()
+            request.user.message_set.create(message=_(u'The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj), 'num_sent': num_sent,}))
             return HttpResponseRedirect('../')
 
         
