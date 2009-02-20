@@ -1,5 +1,5 @@
 from django import forms
-from django.utils import simplejson as json
+from django.utils.simplejson import simplejson as json
 from django.utils.translation import ugettext as _
 
 class UploadForm(forms.Form):
