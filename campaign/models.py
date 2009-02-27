@@ -58,7 +58,19 @@ class Subscriber(Recipient):
     
     """
 
+
+class SubscriberList(models.Model):
+    """
+    A list of Subscriber objects.
     
+    """
+    name = models.CharField(_(u"Name"), max_length=255)
+    subscribers = models.ManyToManyField(Subscriber, null=True, verbose_name=_(u"Subscribers"))
+    
+    def __unicode__(self):
+        return self.name
+
+        
 class Campaign(models.Model):
     """
     A Campaign is the central part of this app. Once a Campaign is created,
@@ -71,7 +83,7 @@ class Campaign(models.Model):
     """
     name = models.CharField(_(u"Name"), max_length=255)
     template = models.ForeignKey(MailTemplate, verbose_name=_(u"Template"))
-    recipients = models.ManyToManyField(Subscriber, verbose_name=_(u"Subscribers"))
+    recipients = models.ManyToManyField(SubscriberList, verbose_name=_(u"Subscriber lists"))
     sent = models.BooleanField(_(u"sent out"), default=False, editable=False)
     
     def __unicode__(self):
@@ -98,14 +110,16 @@ class Campaign(models.Model):
         html_template = template.Template(self.template.html)
         
         sent = 0
-        for recipient in self.recipients.all():
-            # never send mail to blacklisted email addresses
-            if not BlacklistEntry.objects.filter(email=recipient.email).count():
-                msg = EmailMultiAlternatives(subject, connection=connection, to=[recipient.email,])
-                msg.body = text_template.render(template.Context({'salutation': recipient.salutation,}))
-                html_content = html_template.render(template.Context({'salutation': recipient.salutation,}))
-                msg.attach_alternative(html_content, 'text/html')
-                sent += msg.send()
+        for recipient_list in self.recipients.all():
+            for recipient in recipient_list.subscribers.all():
+                # never send mail to blacklisted email addresses
+                if not BlacklistEntry.objects.filter(email=recipient.email).count():
+                    msg = EmailMultiAlternatives(subject, connection=connection, to=[recipient.email,])
+                    msg.body = text_template.render(template.Context({'salutation': recipient.salutation,}))
+                    if self.template.html is not None and self.template.html != u"":
+                        html_content = html_template.render(template.Context({'salutation': recipient.salutation,}))
+                        msg.attach_alternative(html_content, 'text/html')
+                    sent += msg.send()
         return sent
 
 

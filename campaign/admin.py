@@ -11,7 +11,7 @@ from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 from django.utils.simplejson import simplejson as json
 
-from campaign.models import MailTemplate, Subscriber, Campaign, BlacklistEntry, BounceEntry
+from campaign.models import MailTemplate, Subscriber, Campaign, BlacklistEntry, BounceEntry, SubscriberList
 from campaign.forms import UploadForm
 
 
@@ -189,3 +189,4 @@ admin.site.register(MailTemplate)
 admin.site.register(Subscriber, SubscriberAdmin)
 admin.site.register(BlacklistEntry)
 admin.site.register(BounceEntry)
+admin.site.register(SubscriberList, filter_horizontal=('subscribers',))
