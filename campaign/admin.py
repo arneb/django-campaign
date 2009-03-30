@@ -18,6 +18,7 @@ from campaign.forms import UploadForm
 class SubscriberAdmin(admin.ModelAdmin):
     
     import_template=None
+    list_display = ('email', 'salutation')
     
     def has_import_permission(self, request):
         """
