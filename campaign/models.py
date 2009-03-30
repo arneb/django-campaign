@@ -16,8 +16,8 @@ class MailTemplate(models.Model):
     
     """
     name = models.CharField(_(u"Name"), max_length=255)
-    html = models.TextField(_(u"HTML Body"), blank=True, null=True)
     plain = models.TextField(_(u"Plaintext Body"))
+    html = models.TextField(_(u"HTML Body"), blank=True, null=True)
     subject = models.CharField(_(u"Subject"), max_length=255)
     
     def __unicode__(self):
@@ -107,7 +107,8 @@ class Campaign(models.Model):
         """    
         subject = self.template.subject
         text_template = template.Template(self.template.plain)
-        html_template = template.Template(self.template.html)
+        if self.template.html is not None and self.template.html != u"":
+            html_template = template.Template(self.template.html)
         
         sent = 0
         for recipient_list in self.recipients.all():
