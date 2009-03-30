@@ -47,7 +47,7 @@ class SubscriberAdmin(admin.ModelAdmin):
 
                     for entry in data:
                         try:
-                            Subscriber.objects.create(email=entry['email'], salutation=entry['name'])
+                            Subscriber.objects.create(email=entry['email'], salutation=force_unicode(entry['name']))
                             num_import += 1
                         except Exception, e:
                             pass
@@ -56,7 +56,7 @@ class SubscriberAdmin(admin.ModelAdmin):
                         reader = csv.reader(form.cleaned_data['file'].readlines(), delimiter=',')
                         for entry in reader:
                             try:
-                                Subscriber.objects.create(email=entry[0], salutation=entry[1])
+                                Subscriber.objects.create(email=entry[0], salutation=force_unicode(entry[1]))
                                 num_import += 1
                             except Exception, e:
                                 pass
