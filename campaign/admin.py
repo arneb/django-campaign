@@ -114,7 +114,7 @@ class SubscriberAdmin(admin.ModelAdmin):
 
 class CampaignAdmin(admin.ModelAdmin):
     filter_horizontal=('recipients',)
-    list_display=('name', 'sent')
+    list_display=('name', 'sent', 'online')
     send_template = None
     
     def has_send_permission(self, request, obj):

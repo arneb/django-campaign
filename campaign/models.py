@@ -85,6 +85,7 @@ class Campaign(models.Model):
     template = models.ForeignKey(MailTemplate, verbose_name=_(u"Template"))
     recipients = models.ManyToManyField(SubscriberList, verbose_name=_(u"Subscriber lists"))
     sent = models.BooleanField(_(u"sent out"), default=False, editable=False)
+    online = models.BooleanField(_(u"available online"), default=True, blank=True, help_text=_(u"make a copy available online"))
     
     def __unicode__(self):
         return self.name
