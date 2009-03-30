@@ -26,6 +26,11 @@
 			{% endblocktrans %}
 			<pre>[{"email": "info@example.com", "name": "Peter"}, 
  {"email": "news@example.de", "name": "Hans"}]</pre>
+			{% blocktrans %}or in csv format with ',' as delimiter:
+			{% endblocktrans %}
+			<pre>"info@example.com", "Peter"
+"news@example.de", "Hans"</pre> 
+			 
 		</div>
 		<div class="form-row">
 			{{ form }}

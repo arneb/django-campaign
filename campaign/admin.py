@@ -1,3 +1,4 @@
+import csv
 from django import forms
 from django.shortcuts import render_to_response
 from django import template
@@ -39,14 +40,29 @@ class SubscriberAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             form = UploadForm(request.POST, request.FILES)
             if form.is_valid():
-                data = json.loads(form.cleaned_data['file'].read())
                 num_import = 0
-                for entry in data:
+
+                try: # try json
+                    data = json.loads(form.cleaned_data['file'].read())
+
+                    for entry in data:
+                        try:
+                            Subscriber.objects.create(email=entry['email'], salutation=entry['name'])
+                            num_import += 1
+                        except Exception, e:
+                            pass
+                except: # may be csv data
                     try:
-                        Subscriber.objects.create(email=entry['email'], salutation=entry['name'])
-                        num_import += 1
-                    except Exception, e:
-                        pass
+                        reader = csv.reader(form.cleaned_data['file'].readlines(), delimiter=',')
+                        for entry in reader:
+                            try:
+                                Subscriber.objects.create(email=entry[0], salutation=entry[1])
+                                num_import += 1
+                            except Exception, e:
+                                pass
+                    except:
+                        raise
+                                
                 request.user.message_set.create(message=_(u'Successfully imported  %(num_import)s %(name)s.' %  {'name': force_unicode(opts.verbose_name_plural), 'num_import': num_import,}))
                 return HttpResponseRedirect('../')
                         

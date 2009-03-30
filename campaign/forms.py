@@ -1,3 +1,4 @@
+import csv
 from django import forms
 from django.utils.simplejson import simplejson as json
 from django.utils.translation import ugettext as _
@@ -14,6 +15,10 @@ class UploadForm(forms.Form):
             self.cleaned_data['file'].seek(0)
             return self.cleaned_data['file']
         except Exception, e:
-            raise forms.ValidationError(_(u"uploaded file must contain json data"))
+            try:
+                reader = csv.reader(self.cleaned_data['file'].readlines())
+                self.cleaned_data['file'].seek(0)
+                return self.cleaned_data['file']
+            except Exception, e:
+                raise forms.ValidationError(_(u"uploaded file must contain json or csv data"))
         
-    
