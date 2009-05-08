@@ -10,7 +10,10 @@ from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
-from django.utils.simplejson import simplejson as json
+try:
+    from django.utils.simplejson import simplejson as json
+except ImportError:
+    from django.utils import simplejson as json
 
 from campaign.models import MailTemplate, Subscriber, Campaign, BlacklistEntry, BounceEntry, SubscriberList
 from campaign.forms import UploadForm

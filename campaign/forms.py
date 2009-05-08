@@ -1,8 +1,11 @@
 import csv
 from django import forms
-from django.utils.simplejson import simplejson as json
 from django.utils.translation import ugettext as _
-
+try:
+    from django.utils.simplejson import simplejson as json
+except ImportError:
+    from django.utils import simplejson as json
+    
 class UploadForm(forms.Form):
     """
     validates that the uploaded file contains parseable json data.
