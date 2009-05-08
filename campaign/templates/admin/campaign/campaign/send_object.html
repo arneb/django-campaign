@@ -31,7 +31,9 @@
 			<h3>{% trans "Subscriber lists" %}</h3>
             <ul>
             {% for subscriber_list in object.recipients.all %}
-                <li><strong>{{ subscriber_list.name }}</strong> – {% blocktrans with subscriber_list.subscribers.count as subscriber_count %}{{ subscriber_count }} recipients{% endblocktrans %}</li>
+				{% with subscriber_list.subscribers.count as subscribercount %} 
+                <li><strong>{{ subscriber_list.name }}</strong> – {% blocktrans with subscribercount as subscriber_count and subscribercount|pluralize as pluralized %}{{ subscriber_count }} recipient{{ pluralized }}{% endblocktrans %}</li>
+				{% endwith %} 
             {% endfor %}
             </ul>
 		</div>
