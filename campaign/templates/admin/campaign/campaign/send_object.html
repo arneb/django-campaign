@@ -22,12 +22,18 @@
 <div>
 	<div class="module">
 		<div class="form-row">
-			<p>{% blocktrans with opts.verbose_name|capfirst as model_name and object|truncatewords:"18" as object_name %}
-			Clicking 'Send' below will send the <a href="../">{{ object_name }}</a> {{ model_name }} to its recipients.
-			{% endblocktrans %}</p>
 			{% if object.sent %}
 			<div class="errornote">{% trans "This campaign has already been sent at least once. Are you sure that you want to send it again?" %}</div>
 			{% endif %}
+			<p>{% blocktrans with opts.verbose_name|capfirst as model_name and object|truncatewords:"18" as object_name %}
+			Clicking 'Send' below will send the <a href="../">{{ object_name }}</a> {{ model_name }} to its recipients.
+			{% endblocktrans %}</p>
+			<h3>{% trans "Subscriber lists" %}</h3>
+            <ul>
+            {% for subscriber_list in object.recipients.all %}
+                <li><strong>{{ subscriber_list.name }}</strong> – {% blocktrans with subscriber_list.subscribers.count as subscriber_count %}{{ subscriber_count }} recipients{% endblocktrans %}</li>
+            {% endfor %}
+            </ul>
 		</div>
 	</div>
 	<input type="hidden" value="1" name="send"/>
