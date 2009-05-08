@@ -112,16 +112,18 @@ class Campaign(models.Model):
             html_template = template.Template(self.template.html)
         
         sent = 0
+        used_addresses = []
         for recipient_list in self.recipients.all():
             for recipient in recipient_list.subscribers.all():
                 # never send mail to blacklisted email addresses
-                if not BlacklistEntry.objects.filter(email=recipient.email).count():
+                if not BlacklistEntry.objects.filter(email=recipient.email).count() and not recipient.email in used_addresses:
                     msg = EmailMultiAlternatives(subject, connection=connection, to=[recipient.email,])
                     msg.body = text_template.render(template.Context({'salutation': recipient.salutation,}))
                     if self.template.html is not None and self.template.html != u"":
                         html_content = html_template.render(template.Context({'salutation': recipient.salutation,}))
                         msg.attach_alternative(html_content, 'text/html')
                     sent += msg.send()
+                    used_addresses.append(recipient.email)
         return sent
 
 
