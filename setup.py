@@ -4,6 +4,7 @@ setup(
     name='django-campaign',
     version=__import__('campaign').__version__,
     description='A basic newsletter app for the Django webframework',
+    long_description=open('docs/overview.txt').read(),
     author='Arne Brodowski',
     author_email='arne@rcs4u.de',
     url='http://code.google.com/p/django-campaign/',
@@ -19,4 +20,9 @@ setup(
     packages = (
         'campaign',
     ),
+    package_data = {
+        'campaign': 
+            ['templates/admin/campaign/campaign/*.html',
+             'templates/admin/campaign/subscriber/*.html'],
+    }
 )
