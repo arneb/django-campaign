@@ -1,0 +1,10 @@
+================
+E-Mail Templates
+================
+
+All e-mail templates are pure Django Templates, please see the `Django
+Template Documentation`_ for details. This document only contains some parts
+specific to django-campaign.
+
+
+.. _`Django Template Documentation`: http://docs.djangoproject.com/en/dev/topics/templates/

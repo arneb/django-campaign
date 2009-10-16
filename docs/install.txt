@@ -1,0 +1,44 @@
+==========================
+Installing django-campaign
+==========================
+
+This document describes how to install django-campaign.
+
+Quickstart
+----------
+
+1. Install django-campaign with ``easy_install``::
+
+    easy_install django-campaign
+    
+2. Add ``campaign`` to your ``INSTALLED_APPS`` setting::
+
+    INSTALLED_APPS = (
+        ...
+        'campaign',
+        ...
+    )
+    
+3. Add an entry to your URL-conf. Using ``campaign`` here is a matter of taste,
+   feel free to mount the app under a different URL::
+
+    urlpatterns += patterns('',
+        (r'^campaign/', include('campaign.urls'))
+    )
+    
+4. Then run ``manage.py syncdb`` to create the neccessary database tables.
+    
+Manual Install
+--------------
+    
+Instead of using ``easy_install`` to install the latest release you can also
+run a svn checkout of the recent development version. Just checkout the code
+and add the folder ``campaign`` to your PYTHONPATH, for example by copying or
+symlinking the folder to your site-packages directory.
+
+Downloading a release, unpacking and adding the folder to the PYTHONPATH is, 
+of course, also possible.
+
+After you have added the folder to the PYTHONPATH follow the instructions under
+Quickstart_ above starting at point 2.
+

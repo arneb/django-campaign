@@ -4,10 +4,12 @@ setup(
     name='django-campaign',
     version=__import__('campaign').__version__,
     description='A basic newsletter app for the Django webframework',
-    long_description=open('docs/overview.txt').read(),
+    long_description=open('docs/index.txt').read(),
     author='Arne Brodowski',
     author_email='arne@rcs4u.de',
+    license="BSD",
     url='http://code.google.com/p/django-campaign/',
+    download_url='http://code.google.com/p/django-campaign/downloads/list'
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',

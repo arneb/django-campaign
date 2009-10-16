@@ -4,11 +4,8 @@ How to send Newsletters with django-campaign
 
 Here is a very brief overview how to use django-campaign:
 
-* Import (or enter by hand) a number of subscribers into the Subscriber model.
-  Importing json formatted data is possible.
-
-* Build one or more SubscriberList objects, which hold a bunch of Subscriber
-  objects.
+* Setup one or more SubscriberList objects in the admin interface or
+  programmatically. 
 
 * Create a Campaign object and the corresponding MailTemplate object.
 

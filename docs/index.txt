@@ -1,0 +1,38 @@
+====================================================================
+django-campaign - A basic newsletter app for the Django webframework
+====================================================================
+
+Django-campaign is an application for the Django webframework to make 
+sending out newsletters to a rather small group of subscribers easy.
+It is not a solution to drive your multi-thousand-subscriber campaigns, but 
+a few hundred - maybe a few thousand - subscribers should be possible.
+
+Some of the core features are:
+
+* Multipart Emails made easy - just add a plain-text *and* a html-template.
+* Full control over the Subscriber-Model and therefore the template context
+  used to render the mails.
+* Add context processors to add whatever you need to a mail template based on
+  the recipient. This makes it easy to personalize messages.
+* View the campaigns online
+* German translation for the app
+
+Planned features:
+
+* easy i18n support for the emails
+* simple and optional subscribe/unsubscribe handling
+* every recipient should be able to see his personalized message online
+
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 2
+   
+   overview
+   install
+   settings
+   backends
+   templates
+   concepts
+

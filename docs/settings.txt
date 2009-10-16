@@ -1,0 +1,42 @@
+.. _ref-settings:
+
+==================
+Available Settings
+==================
+
+Here is a list of all available settings of django-campaign and their
+default values. All settings are prefixed with ``CAMPAIGN_``, although this
+is a bit verbose it helps to make it easy to identify these settings.
+
+
+CAMPAIGN_BACKEND
+----------------
+
+Default: ``'campaign.backends.send_mail'``
+
+The backend used for the actual sending of the emails. The default backend
+``campaign.backends.send_mail`` uses Django's built-in e-mail sending
+capabilities.
+
+Additionally the following backends are available:
+
+  * ``campaign.backends.django_mailer``: Uses the resuseable django_mailer 
+    app to queue mails in the database and bulk-send them via cron-job. 
+
+  * ``campaign.backends.debug``: Simple backend which prints some information
+    on stdout instead of sending the email. This only exists to demonstrate
+    how to extract different values from the supplied email message instance.
+
+Please see the :ref:`backend docs <ref-backends>` about implementing your 
+own backend.
+
+
+CAMPAIGN_CONTEXT_PROCESSORS
+---------------------------
+
+Default: ``()`` (empty tuple)
+
+Similar to Django's Template Context Processors these are callables which take
+a Subscriber object as their argument and return a dictionary with items to 
+add to the Template Context which is used to render the Mail.
+

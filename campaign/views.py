@@ -1,6 +1,6 @@
 from django import template, http
 from django.shortcuts import get_object_or_404
-from campaign.models import Campaign
+from campaign.models import Campaign, BlacklistEntry
 
 def view_online(request, object_id):
     campaign = get_object_or_404(Campaign, pk=object_id, online=True)
@@ -12,6 +12,7 @@ def view_online(request, object_id):
         tpl = template.Template(campaign.template.plain)
         content_type = 'text/plain, charset=utf-8'
         
-    return http.HttpResponse(tpl.render(template.Context({})), content_type=content_type)
+    return http.HttpResponse(tpl.render(template.Context({})), 
+                            content_type=content_type)
         
-    
+        

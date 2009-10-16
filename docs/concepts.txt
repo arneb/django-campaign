@@ -1,0 +1,38 @@
+=========================================================
+Philisophy behind some of the concepts of django-campaign
+=========================================================
+
+Why is there no Subscriber-Model?
+---------------------------------
+
+I've tried to use a bunch of different Subscriber-Models bundled with the app
+itself but none of them was usable for more than one use-case so I decided
+to drop the concept of a Subscriber-Model and instead added a mechanism for
+you to hook your own Subscriber (or User or whatever) model into the flow.
+
+By adding a SubscriberList Object with a pointer to the ContentType of your
+Model and by optionally adding lookup kwargs to narrow the selection you can
+specifiy which objects of your model class for a list of subscribers. You
+can even build SubscriberLists for different Models and send a Campaign in
+one step to multiple SubscriberLists. 
+
+Adding a SubscriberList for all active Users present in the django.contrib.auth
+module one would simply add a SubscriberList object::
+
+    from django.contrib.auth.models import User
+    from django.contrib.contenttypes.models import ContentType
+    from campaing.models import SubscriberList
+    
+    obj = SubscriberList.objects.create(
+                content_type=ContentType.objects.get_for_model(User), 
+                filter_condition={'is_active': True}
+            )
+            
+Of course this can also be done using Django's built-in admin interface.
+
+Being alble to add any number and combinations of ContentTypes and lookup kwargs
+and assining one or multiple SubscriberLists to a Campaign one should be able
+to map any real-world scenario to the workflow. If a subscriber is present in
+multiple SubscriberLists this is not a problem because the code makes sure
+that every Campaign is only sent once to every given email address. 
+

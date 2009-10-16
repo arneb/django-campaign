@@ -1,0 +1,53 @@
+.. _ref-backends:
+
+=================
+Backends
+=================
+
+To decouple the actual sending of the e-mails from the application logic 
+and therefore make django-campaign more scaleable version 0.2 introduces a
+concept of backends which encapsulate the whole process of sending the e-mails.
+
+
+Writing your own Backend
+------------------------
+
+Backends for django-campaign must adhere to the following API. Some of the
+methods are mandatory and some are optional, especially if you inherit from
+the ``base`` backend.
+
+The basic structure of a backend is as follows::
+
+    from campaign.backends.base import BaseBackend
+    
+    class ExampleBackend(BaseBackend):
+        def __init__(self):
+            # do some setup here, e.g. processing your own settings
+            
+        ...
+        
+    backend = ExampleBackend()
+    
+If this code is stored in a file ``myproject/myapp/example.py`` then the
+setting to use this backend would be::
+
+    CAMPAIGN_BACKEND = 'myproject.myapp.example'
+    
+Each backend must define a ``backend`` variable, which should be an instance
+of the backend.
+
+
+Backend Methods
+---------------
+
+The following methods must be implemented by every backend:
+
+``send_mail(self, email, fail_silently=False)``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This method takes an instance of ``django.core.mail.EmailMessage`` as argument
+and is responsible for whatever is needed to send this email to the recipient.
+
+The ``fail_silently`` argument specifies whether exceptions should bubble up or
+should be hidden from upper layers.
+
