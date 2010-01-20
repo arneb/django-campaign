@@ -1,0 +1,17 @@
+{% extends "campaign/base.html" %}
+{% load i18n %} 
+
+{% block content %}
+<h1>{% trans "Unsubscribe from our newsletter" %}</h1>
+{% ifequal action "unsubscribe" %} 
+    {% if success %}
+    <p>{% trans "You successfully unscuscribed from our newsletter." %}</p>
+    {% else %}
+    <p>{% trans "Something went wrong and we could not unsubscribe you." %} </p> 
+    {% endif %} 
+{% endifequal %} 
+<form action="" method="post">
+    {{ form.as_p }}
+    <p><input type="submit" value="{% trans "unsubscribe" %}"/></p>
+</form>
+{% endblock %}

@@ -1,6 +1,10 @@
-================
+=========
+Templates
+=========
+
+
 E-Mail Templates
-================
+----------------
 
 All e-mail templates are pure Django Templates, please see the `Django
 Template Documentation`_ for details. This document only contains some parts
@@ -8,3 +12,41 @@ specific to django-campaign.
 
 
 .. _`Django Template Documentation`: http://docs.djangoproject.com/en/dev/topics/templates/
+
+E-Mail Template Context
+~~~~~~~~~~~~~~~~~~~~~~~
+
+At the time the e-mail templates are rendered the following variables are 
+available in the template context:
+
+* ``recipient`` - The object which receives the email. This can be whatever
+  ContentType is specified in the SubscriberList that is currently processed.
+* ``recipient_email`` - The email address to which the current email is send.
+
+If the Campaign is marked for online viewing the context will also contain the
+following variables:
+
+* ``view_online_url`` - The URL at which the campaign can be seen online
+* ``viewed_online`` - If the campaign is viewed with a webbrowser this variable
+  is ``True``, otherwise it is not present. This is usefull to hide the 'view online'
+  links from if the campaign is viewed with a webbrowser.
+* ``site_url`` - The URL of the current django Site. See django.contrib.sites for
+  more information.
+  
+If any :ref:`CAMPAIGN_CONTEXT_PROCESSORS <ref-settings>` are defined 
+their results are also available in the context at the time the email is sent.
+The results of the CAMPAIGN_CONTEXT_PROCESSORS will not be available if the 
+campaign is viewed online.
+
+
+Other Templates
+---------------
+
+If you use the built-in support for handling subscriptions and unsubscriptions
+you most probably want to override the template ``campaign/base.html`` 
+somewhere in your projects TEMPLATE_DIRS. The bundled base.html template is
+only a placeholder to make developing and testing easier. 
+
+Of course, the templates ``campaign/subscribe.html`` and ``campaign/unsubscribe.html``
+can also be overwritten to adapt to your site. They are kept pretty simple
+and only demonstrate how things should work.

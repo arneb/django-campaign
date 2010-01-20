@@ -1,3 +1,5 @@
+.. _ref-concepts:
+
 =========================================================
 Philisophy behind some of the concepts of django-campaign
 =========================================================

@@ -3,7 +3,9 @@ from django import template
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import EmailMultiAlternatives
+from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from campaign.fields import JSONField
 from campaign.context import MailContext
 from campaign.backends import backend
@@ -106,6 +108,10 @@ class Campaign(models.Model):
                 if not BlacklistEntry.objects.filter(email=recipient_email).count() and not recipient_email in used_addresses:
                     msg = EmailMultiAlternatives(subject, to=[recipient_email,])
                     context = MailContext(recipient)
+                    if self.online:
+                        context.update({'view_online_url': reverse("campaign_view_online", kwargs={'object_id': self.pk}),
+                                        'site_url': Site.objects.get_current().domain,
+                                        'recipient_email': recipient_email})
                     msg.body = text_template.render(context)
                     if self.template.html is not None and self.template.html != u"":
                         html_content = html_template.render(context)

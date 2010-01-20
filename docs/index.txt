@@ -15,12 +15,12 @@ Some of the core features are:
 * Add context processors to add whatever you need to a mail template based on
   the recipient. This makes it easy to personalize messages.
 * View the campaigns online
-* German translation for the app
+* German translation for the app (at least for all releases)
+* simple and optional subscribe/unsubscribe handling
 
 Planned features:
 
 * easy i18n support for the emails
-* simple and optional subscribe/unsubscribe handling
 * every recipient should be able to see his personalized message online
 
 Contents

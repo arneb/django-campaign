@@ -1,0 +1,17 @@
+{% extends "campaign/base.html" %}
+{% load i18n %} 
+
+{% block content %}
+<h1>{% trans "Subscribe to our newsletter" %}</h1>
+{% ifequal action "subscribe" %}
+    {% if success %}
+    <p>{% trans "You successfully subscribed to our newsletter." %}</p>
+    {% else %}
+    <p>{% trans "Something went wrong and we could not subscribe you." %} </p> 
+    {% endif %}
+{% endifequal %} 
+<form action="" method="post">
+    {{ form.as_p }}
+    <p><input type="submit" value="{% trans "subscribe" %}"/></p>
+</form>
+{% endblock %}
