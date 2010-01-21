@@ -28,6 +28,10 @@ class MailTemplate(models.Model):
     def __unicode__(self):
         return self.name
     
+    class Meta:
+        verbose_name = _("mail template")
+        verbose_name_plural = _("mail templates")
+        ordering = ('name',)
 
 
 class SubscriberList(models.Model):
@@ -57,7 +61,10 @@ class SubscriberList(models.Model):
     def object_count(self):
         return self.content_type.model_class()._default_manager.filter(**self._get_filter()).count()
             
-            
+    class Meta:
+        verbose_name = _("subscriber list")
+        verbose_name_plural = _("subscriber lists")
+        ordering = ('name',)  
 
         
 class Campaign(models.Model):
@@ -120,7 +127,10 @@ class Campaign(models.Model):
                     used_addresses.append(recipient_email)
         return sent
 
-
+    class Meta:
+        verbose_name = _("campaign")
+        verbose_name_plural = _("campaigns")
+        ordering = ('name', 'sent')
 
 
 class BlacklistEntry(models.Model):
@@ -131,7 +141,15 @@ class BlacklistEntry(models.Model):
     """
     email = models.EmailField()
     added = models.DateTimeField(default=datetime.now, editable=False)
+    
+    def __unicode__(self):
+        return self.email
         
+    class Meta:
+        verbose_name = _("blacklist entry")
+        verbose_name_plural = _("blacklist entries")
+        ordering = ('-added',)    
+
 
 class BounceEntry(models.Model):
     """
@@ -140,4 +158,13 @@ class BounceEntry(models.Model):
     email = models.CharField(_(u"recipient"), max_length=255, blank=True, null=True)
     exception = models.TextField(_(u"exception"), blank=True, null=True)
     
+    def __unicode__(self):
+        return self.email
+        
+    class Meta:
+        verbose_name = _("bounce entry")
+        verbose_name_plural = _("bounce entries")
+        ordering = ('email',)
+        
+
     
