@@ -31,7 +31,7 @@ class JSONField(models.TextField):
             value = simplejson.loads(value)
         return value
  
-    def get_db_prep_save(self, value):
+    def get_db_prep_save(self, value, connection=None):
         if value is None: return
         return simplejson.dumps(value)
  

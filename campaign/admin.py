@@ -5,6 +5,7 @@ from django.utils.functional import update_wrapper
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.contrib.admin.util import unquote
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
@@ -52,14 +53,14 @@ class CampaignAdmin(admin.ModelAdmin):
                 raise PermissionDenied
             
             num_sent = obj.send()
-            request.user.message_set.create(message=_(u'The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj), 'num_sent': num_sent,}))
+            messages.success(request, _(u'The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj), 'num_sent': num_sent,}))
             return HttpResponseRedirect('../')
 
         
         def form_media():
             from django.conf import settings
             css = ['css/forms.css',]
-            return forms.Media(css={'screen': ['%s%s' % (settings.ADMIN_MEDIA_PREFIX, url) for url in css]})
+            return forms.Media(css={'screen': ['%sadmin/%s' % (settings.STATIC_URL, url) for url in css]})
         
         media = self.media + form_media()
 
@@ -69,7 +70,6 @@ class CampaignAdmin(admin.ModelAdmin):
             'object': obj,
             'is_popup': request.REQUEST.has_key('_popup'),
             'media': mark_safe(media),
-            'root_path': self.admin_site.root_path,
             'app_label': opts.app_label,
             'opts': opts,
         }
