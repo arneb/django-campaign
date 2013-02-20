@@ -8,7 +8,7 @@ setup(
     author='Arne Brodowski',
     author_email='arne@rcs4u.de',
     license="BSD",
-    url='http://code.google.com/p/django-campaign/',
+    url='https://github.com/arneb/django-campaign/',
     download_url='http://code.google.com/p/django-campaign/downloads/list',
     classifiers=[
         'Development Status :: 4 - Beta',

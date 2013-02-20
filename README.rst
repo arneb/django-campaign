@@ -5,5 +5,5 @@ A basic newsletter app for the Django webframework
 
 * You can reach the author of django-campaign at arne _at_ rcs4u.de.
 
-* Bug-reports can be filed at the google code project page: 
-  http://code.google.com/p/django-campaign/
+* Bug-reports can be filed at the github project page: 
+  https://github.com/arneb/django-campaign/
