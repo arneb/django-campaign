@@ -1,6 +1,8 @@
-# simple backend which uses Django's built-in mail sending mechanisms
+from campaign.backends.base import BaseBackend
 
-class SendMailBackend(object):
+class SendMailBackend(BaseBackend):
+    """simple backend which uses Django's built-in mail sending mechanisms"""
+    
     def send_mail(self, email, fail_silently=False):
         """
         Parameters:

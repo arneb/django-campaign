@@ -1,8 +1,10 @@
-# simple backend using django-mailer to queue and send the mails
 from django.conf import settings
 from mailer import send_mail
+from campaign.backends.base import BaseBackend
 
-class DjangoMailerBackend(object):
+class DjangoMailerBackend(BaseBackend):
+    """simple backend using django-mailer to queue and send the mails"""
+    
     def send_mail(self, email, fail_silently=False):
         subject = email.subject
         body = email.body

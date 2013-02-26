@@ -86,46 +86,14 @@ class Campaign(models.Model):
     def __unicode__(self):
         return self.name
             
-        
     def send(self):
         """
         Sends the mails to the recipients.
         """
-        num_sent = self._send()
+        num_sent = backend.send_campaign(self)
         self.sent = True
         self.save()
         return num_sent
-        
-        
-    def _send(self):
-        """
-        Does the actual work
-        """    
-        subject = self.template.subject
-        text_template = template.Template(self.template.plain)
-        if self.template.html is not None and self.template.html != u"":
-            html_template = template.Template(self.template.html)
-        
-        sent = 0
-        used_addresses = []
-        for recipient_list in self.recipients.all():
-            for recipient in recipient_list.object_list():
-                # never send mail to blacklisted email addresses
-                recipient_email = getattr(recipient, recipient_list.email_field_name)
-                if not BlacklistEntry.objects.filter(email=recipient_email).count() and not recipient_email in used_addresses:
-                    msg = EmailMultiAlternatives(subject, to=[recipient_email,])
-                    context = MailContext(recipient)
-                    if self.online:
-                        context.update({'view_online_url': reverse("campaign_view_online", kwargs={'object_id': self.pk}),
-                                        'site_url': Site.objects.get_current().domain,
-                                        'recipient_email': recipient_email})
-                    msg.body = text_template.render(context)
-                    if self.template.html is not None and self.template.html != u"":
-                        html_content = html_template.render(context)
-                        msg.attach_alternative(html_content, 'text/html')
-                    sent += backend.send_mail(msg)
-                    used_addresses.append(recipient_email)
-        return sent
 
     class Meta:
         verbose_name = _("campaign")
