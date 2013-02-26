@@ -11,6 +11,23 @@ from campaign.context import MailContext
 from campaign.backends import backend
 
 
+class Newsletter(models.Model):
+    """
+    Represents a recurring newsletter which users can subscribe to.
+    
+    """
+    name = models.CharField(_(u"Name"), max_length=255)
+    description = models.TextField(_(u"Description"), blank=True, null=True)
+    
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = _("newsletter")
+        verbose_name_plural = _("newsletters")
+        ordering = ('name',)
+
+
 class MailTemplate(models.Model):
     """
     Holds a template for the email. Both, HTML and plaintext, versions
@@ -75,9 +92,11 @@ class Campaign(models.Model):
     MailTemplate, but templates may be reused in other Campaigns and maybe
     Campaigns will have support for multiple templates in the future, therefore
     the distinction.
+    A Campaign optionally belongs to a Newsletter.
     
     """
     name = models.CharField(_(u"Name"), max_length=255)
+    newsletter = models.ForeignKey(Newsletter, verbose_name=_(u"Newsletter"), blank=True, null=True)
     template = models.ForeignKey(MailTemplate, verbose_name=_(u"Template"))
     recipients = models.ManyToManyField(SubscriberList, verbose_name=_(u"Subscriber lists"))
     sent = models.BooleanField(_(u"sent out"), default=False, editable=False)

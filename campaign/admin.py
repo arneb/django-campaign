@@ -11,12 +11,12 @@ from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 from campaign.models import MailTemplate, Campaign, BlacklistEntry, \
-BounceEntry, SubscriberList
+BounceEntry, SubscriberList, Newsletter
  
 
 class CampaignAdmin(admin.ModelAdmin):
     filter_horizontal=('recipients',)
-    list_display=('name', 'sent', 'sent_at', 'online')
+    list_display=('name', 'newsletter', 'sent', 'sent_at', 'online')
     send_template = None
     
     def has_send_permission(self, request, obj):
@@ -107,3 +107,4 @@ admin.site.register(MailTemplate)
 admin.site.register(BlacklistEntry)
 admin.site.register(BounceEntry)
 admin.site.register(SubscriberList)
+admin.site.register(Newsletter)
