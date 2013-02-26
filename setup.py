@@ -21,6 +21,8 @@ setup(
     ],
     packages = (
         'campaign',
+        'campaign.backends',
+        'campaign.migrations',
     ),
     package_data = {
         'campaign': 
