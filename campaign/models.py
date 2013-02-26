@@ -1,7 +1,7 @@
-from datetime import datetime
 from django import template
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
@@ -81,6 +81,7 @@ class Campaign(models.Model):
     template = models.ForeignKey(MailTemplate, verbose_name=_(u"Template"))
     recipients = models.ManyToManyField(SubscriberList, verbose_name=_(u"Subscriber lists"))
     sent = models.BooleanField(_(u"sent out"), default=False, editable=False)
+    sent_at = models.DateTimeField(_(u"sent at"), blank=True, null=True)
     online = models.BooleanField(_(u"available online"), default=True, blank=True, help_text=_(u"make a copy available online"))
     
     def __unicode__(self):
@@ -92,6 +93,7 @@ class Campaign(models.Model):
         """
         num_sent = backend.send_campaign(self)
         self.sent = True
+        self.sent_at = timezone.now()
         self.save()
         return num_sent
 
@@ -108,7 +110,7 @@ class BlacklistEntry(models.Model):
     on subsequent imports from a data source.
     """
     email = models.EmailField()
-    added = models.DateTimeField(default=datetime.now, editable=False)
+    added = models.DateTimeField(default=timezone.now, editable=False)
     
     def __unicode__(self):
         return self.email

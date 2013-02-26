@@ -16,7 +16,7 @@ BounceEntry, SubscriberList
 
 class CampaignAdmin(admin.ModelAdmin):
     filter_horizontal=('recipients',)
-    list_display=('name', 'sent', 'online')
+    list_display=('name', 'sent', 'sent_at', 'online')
     send_template = None
     
     def has_send_permission(self, request, obj):
