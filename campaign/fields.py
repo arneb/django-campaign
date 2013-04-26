@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django import forms
 from django.utils import simplejson
@@ -38,4 +39,7 @@ class JSONField(models.TextField):
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
         return self.get_db_prep_value(value)
-        
+
+if 'south' in settings.INSTALLED_APPS:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ["^campaign\.fields\.JSONField"])        
