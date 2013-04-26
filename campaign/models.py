@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from campaign.fields import JSONField
 from campaign.context import MailContext
-from campaign.backends import backend
+from campaign.backends import get_backend
 
 
 class Newsletter(models.Model):
@@ -110,6 +110,7 @@ class Campaign(models.Model):
         """
         Sends the mails to the recipients.
         """
+        backend = get_backend()
         num_sent = backend.send_campaign(self)
         self.sent = True
         self.sent_at = timezone.now()

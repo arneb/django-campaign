@@ -6,7 +6,7 @@ __all__ = ('backend')
 
 CAMPAIGN_BACKEND = getattr(settings, 'CAMPAIGN_BACKEND', 'send_mail')
 
-def get_backend(import_path):
+def get_backend(import_path=CAMPAIGN_BACKEND):
     if not '.' in import_path:
         import_path = "campaign.backends.%s" % import_path
     try:
@@ -29,4 +29,4 @@ def get_backend(import_path):
     except AttributeError:
         raise ImproperlyConfigured('Backend "%s" does not define a "backend" instance.' % import_path)
 
-backend = get_backend(CAMPAIGN_BACKEND)
+#backend = get_backend(CAMPAIGN_BACKEND)
