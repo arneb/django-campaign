@@ -82,7 +82,7 @@ class CampaignAdmin(admin.ModelAdmin):
     
         
     def get_urls(self):
-        from django.conf.urls.defaults import patterns, url
+        from django.conf.urls import patterns, url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
