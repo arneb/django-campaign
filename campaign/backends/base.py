@@ -7,6 +7,8 @@ from campaign.context import MailContext
 class BaseBackend(object):
     """base backend for all campaign backends"""
     
+    context_class = MailContext
+    
     def send_campaign(self, campaign, fail_silently=False):
         """
         Does the actual work
@@ -26,7 +28,7 @@ class BaseBackend(object):
                 recipient_email = getattr(recipient, recipient_list.email_field_name)
                 if not BlacklistEntry.objects.filter(email=recipient_email).count() and not recipient_email in used_addresses:
                     msg = EmailMultiAlternatives(subject, to=[recipient_email,])
-                    context = MailContext(recipient)
+                    context = self.context_class(recipient)
                     if campaign.online:
                         context.update({'view_online_url': reverse("campaign_view_online", kwargs={'object_id': campaign.pk}),
                                         'site_url': Site.objects.get_current().domain,

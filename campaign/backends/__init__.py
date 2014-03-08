@@ -1,13 +1,16 @@
 import os
+import warnings
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 __all__ = ('backend')
 
-CAMPAIGN_BACKEND = getattr(settings, 'CAMPAIGN_BACKEND', 'send_mail')
+CAMPAIGN_BACKEND = getattr(settings, 'CAMPAIGN_BACKEND', 'campaign.backends.send_mail')
 
 def get_backend(import_path=CAMPAIGN_BACKEND):
     if not '.' in import_path:
+        warnings.warn("CAMPAIGN_BACKEND should be a fully qualified module name",
+            DeprecationWarning)
         import_path = "campaign.backends.%s" % import_path
     try:
         mod = __import__(import_path, {}, {}, [''])
