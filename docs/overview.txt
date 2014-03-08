@@ -4,12 +4,18 @@ How to send Newsletters with django-campaign
 
 Here is a very brief overview how to use django-campaign:
 
-* Setup one or more SubscriberList objects in the admin interface or
-  programmatically. 
+* If you plan to send out different Newsletters to different SusbcriberLists,
+  it might be a good idea to create a Newsletter objects through the Django
+  Admin.
 
-* Create a Campaign object and the corresponding MailTemplate object.
+* Setup one or more SubscriberList objects in the Django Admin interface or
+  programmatically.
 
-* Assign one or more SubscriberList objects as recipients to the Campaign.
+* Create at least one MailTemplate object through the Django Admin or
+  programmatically.
 
-* Finally send the Campaign.
+* Create a Campaign object and assign the corresponding MailTemplate object,
+  one or more SubscriberLists.
+
+* Send the Campaign through the Django Admin or programmatically.
 

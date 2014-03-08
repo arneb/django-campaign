@@ -4,12 +4,11 @@ setup(
     name='django-campaign',
     version=__import__('campaign').__version__,
     description='A basic newsletter app for the Django webframework',
-    long_description=open('docs/index.txt').read(),
+    long_description=open('README.rst').read(),
     author='Arne Brodowski',
     author_email='arne@rcs4u.de',
     license="BSD",
     url='https://github.com/arneb/django-campaign/',
-    download_url='http://code.google.com/p/django-campaign/downloads/list',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
@@ -25,7 +24,7 @@ setup(
         'campaign.migrations',
     ),
     package_data = {
-        'campaign': 
+        'campaign':
             ['templates/admin/campaign/campaign/*.html',
              'templates/campaign/*.html'],
     }

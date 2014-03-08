@@ -18,15 +18,6 @@ The backend used for the actual sending of the emails. The default backend
 ``campaign.backends.send_mail`` uses Django's built-in e-mail sending
 capabilities.
 
-Additionally the following backends are available:
-
-  * ``campaign.backends.django_mailer``: Uses the resuseable django_mailer 
-    app to queue mails in the database and bulk-send them via cron-job. 
-
-  * ``campaign.backends.debug``: Simple backend which prints some information
-    on stdout instead of sending the email. This only exists to demonstrate
-    how to extract different values from the supplied email message instance.
-
 Please see the :ref:`backend docs <ref-backends>` about implementing your 
 own backend.
 
