@@ -29,10 +29,10 @@ class BaseBackend(object):
                 if not BlacklistEntry.objects.filter(email=recipient_email).count() and not recipient_email in used_addresses:
                     msg = EmailMultiAlternatives(subject, to=[recipient_email,])
                     context = self.context_class(recipient)
+                    context.update({'recipient_email': recipient_email})
                     if campaign.online:
                         context.update({'view_online_url': reverse("campaign_view_online", kwargs={'object_id': campaign.pk}),
-                                        'site_url': Site.objects.get_current().domain,
-                                        'recipient_email': recipient_email})
+                                        'site_url': Site.objects.get_current().domain})
                     msg.body = text_template.render(context)
                     if campaign.template.html is not None and campaign.template.html != u"":
                         html_content = html_template.render(context)
