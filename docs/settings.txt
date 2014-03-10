@@ -18,18 +18,29 @@ The backend used for the actual sending of the emails. The default backend
 ``campaign.backends.send_mail`` uses Django's built-in e-mail sending
 capabilities.
 
-Please see the :ref:`backend docs <ref-backends>` about implementing your 
+Please see the :ref:`backend docs <ref-backends>` about implementing your
 own backend.
 
 
 CAMPAIGN_CONTEXT_PROCESSORS
 ---------------------------
 
-Default: ``()`` (empty tuple)
+Default: ``('campaign.context_processors.recipient',)``
 
 Similar to Django's Template Context Processors these are callables which take
-a Subscriber object as their argument and return a dictionary with items to 
+a Subscriber object as their argument and return a dictionary with items to
 add to the Template Context which is used to render the Mail.
+
+The following processors are availble within the django-campaign distribution:
+
+* ``recipient``: Implements the old default behaviour and adds the Subscriber
+  object (a Django Model instance) to the mail context under the name
+  `recipient`.
+
+* ``recipient_dict``: Serializes the Subscriber object to a dict before adding
+  it to the context. This is neccesary, if you want to pass per recipient
+  variables to a remote service. Use this a basis for your own campaign
+  context processors.
 
 
 CAMPAIGN_SUBSCRIBE_CALLBACK
@@ -38,7 +49,7 @@ CAMPAIGN_SUBSCRIBE_CALLBACK
 Default: ``None``
 
 If CAMPAIGN_SUBSCRIBE_CALLBACK is configured the handling of newsletter
-subscriptions via django-campaign will be enabled. 
+subscriptions via django-campaign will be enabled.
 
 You have to supply either a callable or an import-path to a callable, which
 accepts an email address as argument and returns either True or False to indicate
@@ -51,7 +62,7 @@ Example settings.py::
 Example implementation of the callback in your app::
 
     def subscribe(email):
-        s,c = Subscriber.objects.get_or_create(email=email, 
+        s,c = Subscriber.objects.get_or_create(email=email,
                                              defaults={'newsletter': True})
         return True
 

@@ -11,7 +11,7 @@ def get_mail_processors():
     global _mail_context_processors
     if _mail_context_processors is None:
         processors = []
-        for path in getattr(settings, 'CAMPAIGN_CONTEXT_PROCESSORS', ()):
+        for path in getattr(settings, 'CAMPAIGN_CONTEXT_PROCESSORS', ('campaign.context_processors.recipient',)):
             i = path.rfind('.')
             module, attr = path[:i], path[i+1:]
             try:
@@ -25,7 +25,8 @@ def get_mail_processors():
             processors.append(func)
         _mail_context_processors = tuple(processors)
     return _mail_context_processors
-    
+
+
 class MailContext(Context):
     """
     This subclass of template.Context automatically populates itself using
@@ -33,12 +34,25 @@ class MailContext(Context):
     Additional processors can be specified as a list of callables
     using the "processors" keyword argument.
     """
-    def __init__(self, subscriber, dict=None, processors=None):
-        Context.__init__(self, dict)
+    def __init__(self, subscriber, dict_=None, processors=None, current_app=None,
+            use_l10n=None, use_tz=None):
+        Context.__init__(self, dict_, current_app=current_app,
+                use_l10n=use_l10n, use_tz=use_tz)
         if processors is None:
             processors = ()
         else:
             processors = tuple(processors)
+        updates = dict()
         for processor in get_mail_processors() + processors:
-            self.update(processor(subscriber))
-        self.update({'recipient': subscriber})
+            updates.update(processor(subscriber))
+
+        self.update(updates)
+
+    def flatten(self):
+        """
+        Returns self.dicts as one dictionary
+        """
+        flat = {}
+        for d in self.dicts:
+            flat.update(d)
+        return flat
