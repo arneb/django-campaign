@@ -27,9 +27,11 @@ class Command(NoArgsCommand):
             rejects = mandrill_client.rejects.list()
 
             for reject in rejects:
-                defaults = {'reason': reject['detail'] or reject['reason']}
-                BlacklistEntry.objects.get_or_create(email=reject['email'],
-                    defaults=defaults)
+                if reject['reason'] in ('hard-bounce', 'spam', 'unsub'):
+                    defaults = {'reason': u"%s: %s" % (reject['reason'],
+                                                       reject['detail'])}
+                    BlacklistEntry.objects.get_or_create(email=reject['email'],
+                                                         defaults=defaults)
 
         except mandrill.Error, e:
             logger.error('Mandrill error: %s - %s' % (e.__class__, e))
