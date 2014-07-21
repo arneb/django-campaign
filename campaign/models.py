@@ -131,6 +131,7 @@ class BlacklistEntry(models.Model):
     """
     email = models.EmailField()
     added = models.DateTimeField(default=timezone.now, editable=False)
+    reason = models.TextField(_(u"reason"), blank=True, null=True)
 
     def __unicode__(self):
         return self.email

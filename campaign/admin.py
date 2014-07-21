@@ -107,7 +107,7 @@ class CampaignAdmin(admin.ModelAdmin):
 
 admin.site.register(Campaign, CampaignAdmin)
 admin.site.register(MailTemplate)
-admin.site.register(BlacklistEntry)
+admin.site.register(BlacklistEntry, list_display=('email', 'added'))
 admin.site.register(BounceEntry)
 admin.site.register(SubscriberList)
 admin.site.register(Newsletter)
