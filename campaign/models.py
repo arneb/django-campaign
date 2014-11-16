@@ -140,19 +140,3 @@ class BlacklistEntry(models.Model):
         verbose_name = _("blacklist entry")
         verbose_name_plural = _("blacklist entries")
         ordering = ('-added',)
-
-
-class BounceEntry(models.Model):
-    """
-    Records bouncing Recipients. To be processed by a human.
-    """
-    email = models.CharField(_(u"recipient"), max_length=255, blank=True, null=True)
-    exception = models.TextField(_(u"exception"), blank=True, null=True)
-
-    def __unicode__(self):
-        return self.email
-
-    class Meta:
-        verbose_name = _("bounce entry")
-        verbose_name_plural = _("bounce entries")
-        ordering = ('email',)
