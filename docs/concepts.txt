@@ -30,9 +30,10 @@ module one would simply add a SubscriberList object::
                 filter_condition={'is_active': True}
             )
             
-Of course this can also be done using Django's built-in admin interface.
+Of course this can also be done using Django's built-in admin interface. Simply
+select Content type ``user`` and Filter condition ``{"is_active": true}``.
 
-Being alble to add any number and combinations of ContentTypes and lookup kwargs
+Being able to add any number and combinations of ContentTypes and lookup kwargs
 and assining one or multiple SubscriberLists to a Campaign one should be able
 to map any real-world scenario to the workflow. If a subscriber is present in
 multiple SubscriberLists this is not a problem because the code makes sure
