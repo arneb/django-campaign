@@ -18,6 +18,10 @@ The backend used for the actual sending of the emails. The default backend
 ``campaign.backends.send_mail`` uses Django's built-in e-mail sending
 capabilities.
 
+Additionally the following backend is available:
+
+* ``'campaign.backends.mandrill_api'``: Uses Mandrill for sending the e-mails.
+
 Please see the :ref:`backend docs <ref-backends>` about implementing your
 own backend.
 
