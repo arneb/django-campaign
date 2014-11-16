@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 from campaign.models import MailTemplate, Campaign, BlacklistEntry, \
-BounceEntry, SubscriberList, Newsletter
+SubscriberList, Newsletter
 
 
 class CampaignAdmin(admin.ModelAdmin):
@@ -108,6 +108,5 @@ class CampaignAdmin(admin.ModelAdmin):
 admin.site.register(Campaign, CampaignAdmin)
 admin.site.register(MailTemplate)
 admin.site.register(BlacklistEntry, list_display=('email', 'added'))
-admin.site.register(BounceEntry)
 admin.site.register(SubscriberList)
 admin.site.register(Newsletter)
