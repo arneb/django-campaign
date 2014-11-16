@@ -25,7 +25,7 @@ class MandrillApiBackend(BaseBackend):
 
     The From-Email is determined from the following settings in this order::
 
-        settings.MANDRILL_API_FROM_EMAIL
+        settings.CAMPAIGN_FROM_EMAIL
         settings.DEFAULT_FROM_EMAIL
 
     You can provide additional values for the API call via::
@@ -94,7 +94,7 @@ class MandrillApiBackend(BaseBackend):
             message = {
              'auto_html': False,
              'auto_text': False,
-             'from_email': getattr(settings, 'MANDRILL_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL),
+             'from_email': getattr(settings, 'CAMPAIGN_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL),
              'important': False,
              'inline_css': False,
              'merge': True,
