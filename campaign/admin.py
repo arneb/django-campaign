@@ -5,11 +5,15 @@ try:
     from django.utils.functional import update_wrapper
 except ImportError:
     from functools import update_wrapper
+from django.conf.urls import patterns, url
+from django.conf import settings
 from django.contrib import admin
+from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseRedirect
 from django.contrib.admin.util import unquote
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.core.management import call_command
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
@@ -61,7 +65,6 @@ class CampaignAdmin(admin.ModelAdmin):
 
 
         def form_media():
-            from django.conf import settings
             css = ['css/forms.css',]
             return forms.Media(css={'screen': ['%sadmin/%s' % (settings.STATIC_URL, url) for url in css]})
 
@@ -85,8 +88,6 @@ class CampaignAdmin(admin.ModelAdmin):
 
 
     def get_urls(self):
-        from django.conf.urls import patterns, url
-
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
@@ -105,8 +106,30 @@ class CampaignAdmin(admin.ModelAdmin):
         return urlpatterns
 
 
+class BlacklistEntryAdmin(admin.ModelAdmin):
+    list_display=('email', 'added')
+
+    def fetch_mandrill_rejects(self, request):
+        call_command('fetch_mandrill_rejects')
+        return HttpResponseRedirect(request.META["HTTP_REFERER"])
+
+
+    def get_urls(self):
+        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
+
+        super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
+        urlpatterns = patterns('',
+            url(r'^fetch_mandrill_rejects/$',
+                self.fetch_mandrill_rejects,
+                name='%sadmin_%s_%s_fetchmandrillrejects' % info),
+        )
+        urlpatterns += super_urlpatterns
+
+        return urlpatterns
+
+
 admin.site.register(Campaign, CampaignAdmin)
 admin.site.register(MailTemplate)
-admin.site.register(BlacklistEntry, list_display=('email', 'added'))
+admin.site.register(BlacklistEntry, BlacklistEntryAdmin)
 admin.site.register(SubscriberList)
 admin.site.register(Newsletter)
