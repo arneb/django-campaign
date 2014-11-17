@@ -111,16 +111,21 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
 
     def fetch_mandrill_rejects(self, request):
         call_command('fetch_mandrill_rejects')
-        return HttpResponseRedirect(request.META["HTTP_REFERER"])
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", '..'))
 
 
     def get_urls(self):
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(view)(*args, **kwargs)
+            return update_wrapper(wrapper, view)
+
         info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
 
         super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
         urlpatterns = patterns('',
             url(r'^fetch_mandrill_rejects/$',
-                self.fetch_mandrill_rejects,
+                wrap(self.fetch_mandrill_rejects),
                 name='%sadmin_%s_%s_fetchmandrillrejects' % info),
         )
         urlpatterns += super_urlpatterns
