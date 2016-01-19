@@ -111,6 +111,8 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
 
     def fetch_mandrill_rejects(self, request):
         call_command('fetch_mandrill_rejects')
+        msg = _("Successfully fetched Mandrill rejects")
+        self.message_user(request, msg, messages.SUCCESS)
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", '..'))
 
 
