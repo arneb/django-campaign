@@ -18,6 +18,7 @@ class Newsletter(models.Model):
     """
     name = models.CharField(_(u"Name"), max_length=255)
     description = models.TextField(_(u"Description"), blank=True, null=True)
+    from_email = models.EmailField(_(u"Sending Address"), blank=True, null=True)
 
     def __unicode__(self):
         return self.name

@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
@@ -15,7 +16,7 @@ class BaseBackend(object):
         """
         from campaign.models import BlacklistEntry
 
-        from_email = getattr(settings, 'CAMPAIGN_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
+        from_email = self.get_from_email(campaign)
         subject = campaign.template.subject
         text_template = template.Template(campaign.template.plain)
         if campaign.template.html is not None and campaign.template.html != u"":
@@ -44,3 +45,11 @@ class BaseBackend(object):
 
     def send_mail(self, email, fail_silently=False):
         raise NotImplementedError
+
+    def get_from_email(self, campaign):
+        from_email = getattr(settings, 'CAMPAIGN_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
+        try:
+            from_email = campaign.newsletter.from_email
+        except:
+            pass
+        return from_email

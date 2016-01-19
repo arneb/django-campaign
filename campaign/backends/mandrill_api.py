@@ -23,7 +23,8 @@ class MandrillApiBackend(BaseBackend):
     default 'campaign.context_processors.recipient' needs to be removed in
     favour of the 'campaign.context_processors.recipient_dict'!
 
-    The From-Email is determined from the following settings in this order::
+    If no sending address is specified in the database, the From-Email is
+    determined from the following settings in this order::
 
         settings.MANDRILL_API_FROM_EMAIL  # only used by this backend
         settings.CAMPAIGN_FROM_EMAIL  # used by all backends that support it
@@ -84,16 +85,7 @@ class MandrillApiBackend(BaseBackend):
                         the_merge_vars.append({'name': k, 'content': v})
                     merge_vars.append({'rcpt': recipient_email, 'vars': the_merge_vars})
 
-        #print text_template.render(Context())
-        #print html_template.render(Context())
-        #print recipients
-        #print merge_vars
-        #return 0
-
-        if hasattr(settings, 'MANDRILL_API_FROM_EMAIL'):
-            from_email = settings.MANDRILL_API_FROM_EMAIL
-        else:
-            from_email = getattr(settings, 'CAMPAIGN_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
+        from_email = self.get_from_email(campaign)
 
         try:
             mandrill_client = mandrill.Mandrill(settings.MANDRILL_API_KEY)
@@ -127,5 +119,17 @@ class MandrillApiBackend(BaseBackend):
             logger.error('Mandrill error: %s - %s' % (e.__class__, e))
             if not fail_silently:
                 raise e
+
+    def get_from_email(self, campaign):
+        if hasattr(settings, 'MANDRILL_API_FROM_EMAIL'):
+            from_email = settings.MANDRILL_API_FROM_EMAIL
+        else:
+            from_email = getattr(settings, 'CAMPAIGN_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
+
+        try:
+            from_email = campaign.newsletter.from_email
+        except:
+            pass
+        return from_email
 
 backend = MandrillApiBackend()
