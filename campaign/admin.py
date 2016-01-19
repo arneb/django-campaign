@@ -7,13 +7,12 @@ except ImportError:
     from functools import update_wrapper
 from django.conf.urls import patterns, url
 from django.conf import settings
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.http import HttpResponseRedirect
 from django.contrib.admin.util import unquote
-from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe

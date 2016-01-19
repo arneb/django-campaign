@@ -77,7 +77,7 @@ class SubscriberList(models.Model):
         return self.content_type.model_class()._default_manager.filter(**self._get_filter())
 
     def object_count(self):
-        return self.content_type.model_class()._default_manager.filter(**self._get_filter()).count()
+        return self.object_list().count()
 
     class Meta:
         verbose_name = _("subscriber list")
