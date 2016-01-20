@@ -49,7 +49,7 @@ class BaseBackend(object):
     def get_from_email(self, campaign):
         from_email = getattr(settings, 'CAMPAIGN_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
         try:
-            from_email = campaign.newsletter.from_email
+            from_email = campaign.newsletter.from_email or from_email
         except:
             pass
         return from_email
