@@ -1,23 +1,27 @@
-from django.shortcuts import render_to_response
-from django import template
-from django import forms
-try:
-    from django.utils.functional import update_wrapper
-except ImportError:
-    from functools import update_wrapper
-from django.conf.urls import patterns, url
-from django.conf import settings
-from django.contrib import admin, messages
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.admin.util import unquote
-from django.core.exceptions import PermissionDenied
-from django.core.management import call_command
-from django.http import HttpResponseRedirect
+# -*- coding: utf-8 -*-
+
+from functools import update_wrapper
+
+from django.contrib import admin
+from django.contrib import messages
 from django.utils.translation import ugettext as _
-from django.utils.encoding import force_unicode
-from django.utils.safestring import mark_safe
-from campaign.models import MailTemplate, Campaign, BlacklistEntry, \
-SubscriberList, Newsletter
+from django.contrib.admin.util import quote, unquote
+from django.contrib.admin.options import IS_POPUP_VAR
+from django.core.exceptions import PermissionDenied
+from django.template.response import TemplateResponse
+from django.http import HttpResponseRedirect, Http404
+from django.core.urlresolvers import reverse
+try:
+    from django.contrib.admin.utils import unquote
+except ImportError:
+    from django.contrib.admin.util import unquote
+try:
+    from django.utils.encoding import force_unicode as force_text
+except ImportError:
+    from django.utils.encoding import force_text
+from django.utils.html import escape
+
+from .models import Campaign, MailTemplate, BlacklistEntry, SubscriberList, Newsletter
 
 
 class CampaignAdmin(admin.ModelAdmin):
@@ -32,6 +36,20 @@ class CampaignAdmin(admin.ModelAdmin):
         """
         return request.user.is_superuser
 
+    def get_urls(self):
+        from django.conf.urls import url
+
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(view)(*args, **kwargs)
+            wrapper.model_admin = self
+            return update_wrapper(wrapper, view)
+
+        info = self.model._meta.app_label, self.model._meta.model_name
+        urlpatterns = [
+            url(r'^(.+)/send/$', wrap(self.send_view), name='%s_%s_send' % info),
+        ]
+        return urlpatterns + super(CampaignAdmin, self).get_urls()
 
     def send_view(self, request, object_id, extra_context=None):
         """
@@ -40,99 +58,86 @@ class CampaignAdmin(admin.ModelAdmin):
         model = self.model
         opts = model._meta
 
-        try:
-            obj = model._default_manager.get(pk=unquote(object_id))
-        except model.DoesNotExist:
-            # Don't raise Http404 just yet, because we haven't checked
-            # permissions yet. We don't want an unauthenticated user to be able
-            # to determine whether a given object exists.
-            obj = None
+        obj = self.get_object(request, unquote(object_id))
 
         if not self.has_send_permission(request, obj):
             raise PermissionDenied
 
         if obj is None:
-            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(opts.verbose_name), 'key': escape(object_id)})
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {
+                'name': force_text(model._meta.verbose_name),
+                'key': escape(object_id),
+            })
 
         if request.method == 'POST':
-            if not request.POST.get('send', None) == '1':
+            if not request.POST.get('action', None) == 'send':
                 raise PermissionDenied
 
             num_sent = obj.send()
-            messages.success(request, _(u'The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj), 'num_sent': num_sent,}))
-            return HttpResponseRedirect('../')
 
+            self.message_user(request,
+                _(u'The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {
+                    'name': force_text(opts.verbose_name),
+                    'obj': force_text(obj),
+                    'num_sent': num_sent,
+                }), messages.SUCCESS)
+            return HttpResponseRedirect(reverse(
+                'admin:%s_%s_change' % (opts.app_label, opts.model_name),
+                args=(quote(obj._get_pk_val()),),
+                current_app=self.admin_site.name,
+            ))
 
-        def form_media():
-            css = ['css/forms.css',]
-            return forms.Media(css={'screen': ['%sadmin/%s' % (settings.STATIC_URL, url) for url in css]})
-
-        media = self.media + form_media()
-
-        context = {
-            'title': _('Send %s') % force_unicode(opts.verbose_name),
-            'object_id': object_id,
-            'object': obj,
-            'is_popup': request.REQUEST.has_key('_popup'),
-            'media': mark_safe(media),
-            'app_label': opts.app_label,
-            'opts': opts,
-        }
+        context = dict(
+            title=_('Send %s') % force_text(opts.verbose_name),
+            object_id=object_id,
+            object=obj,
+            is_popup=(IS_POPUP_VAR in request.POST or IS_POPUP_VAR in request.GET),
+            media=self.media,
+            app_label=opts.app_label,
+            opts=opts,
+        )
         context.update(extra_context or {})
 
-        return render_to_response(self.send_template or
-            ['admin/%s/%s/send_object.html' % (opts.app_label, opts.object_name.lower()),
-            'admin/%s/send_object.html' % opts.app_label,
-            'admin/send_object.html'], context, context_instance=template.RequestContext(request))
-
-
-    def get_urls(self):
-        def wrap(view):
-            def wrapper(*args, **kwargs):
-                return self.admin_site.admin_view(view)(*args, **kwargs)
-            return update_wrapper(wrapper, view)
-
-        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
-
-        super_urlpatterns = super(CampaignAdmin, self).get_urls()
-        urlpatterns = patterns('',
-            url(r'^(.+)/send/$',
-                wrap(self.send_view),
-                name='%sadmin_%s_%s_send' % info),
-        )
-        urlpatterns += super_urlpatterns
-
-        return urlpatterns
+        return TemplateResponse(request,
+            self.send_template or [
+                'admin/%s/%s/send_object.html' % (opts.app_label, opts.object_name.lower()),
+                'admin/%s/send_object.html' % opts.app_label,
+                'admin/send_object.html',
+            ], context)
 
 
 class BlacklistEntryAdmin(admin.ModelAdmin):
     list_display=('email', 'added')
 
-    def fetch_mandrill_rejects(self, request):
-        call_command('fetch_mandrill_rejects')
-        msg = _("Successfully fetched Mandrill rejects")
-        self.message_user(request, msg, messages.SUCCESS)
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", '..'))
-
-
     def get_urls(self):
+        from django.conf.urls import url
+
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
+            wrapper.model_admin = self
             return update_wrapper(wrapper, view)
 
-        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
-
-        super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
-        urlpatterns = patterns('',
+        info = self.model._meta.app_label, self.model._meta.model_name
+        urlpatterns = [
             url(r'^fetch_mandrill_rejects/$',
-                wrap(self.fetch_mandrill_rejects),
-                name='%sadmin_%s_%s_fetchmandrillrejects' % info),
-        )
-        urlpatterns += super_urlpatterns
+                wrap(self.fetch_mandrill_rejects), name='%s_%s_fetchmandrillrejects' % info),
+        ]
+        return urlpatterns + super(BlacklistEntryAdmin, self).get_urls()
 
-        return urlpatterns
+    def fetch_mandrill_rejects(self, request):
+        from django.core.management import call_command
 
+        model = self.model
+        opts = model._meta
+
+        call_command('fetch_mandrill_rejects')
+        self.message_user(
+            request, _("Successfully fetched Mandrill rejects"), messages.SUCCESS)
+        return HttpResponseRedirect(reverse(
+            'admin:%s_%s_changelist' % (opts.app_label, opts.model_name),
+            current_app=self.admin_site.name,
+        ))
 
 admin.site.register(Campaign, CampaignAdmin)
 admin.site.register(MailTemplate)
