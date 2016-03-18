@@ -9,6 +9,9 @@ setup(
     author_email='arne@rcs4u.de',
     license="BSD",
     url='https://github.com/arneb/django-campaign/',
+    install_requires=[
+        'jsonfield',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
