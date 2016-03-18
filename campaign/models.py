@@ -1,14 +1,20 @@
+
 from django import template
 from django.db import models
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from campaign.fields import JSONField
-from campaign.context import MailContext
-from campaign.backends import get_backend
+
+import swapper
+
+from .fields import JSONField
+from .context import MailContext
+from .backends import get_backend
+from .abstracts import CampaignAbstract
 
 
 class Newsletter(models.Model):
@@ -85,43 +91,22 @@ class SubscriberList(models.Model):
         ordering = ('name',)
 
 
-class Campaign(models.Model):
+class Campaign(CampaignAbstract):
     """
-    A Campaign is the central part of this app. Once a Campaign is created,
-    has a MailTemplate and one or more SubscriberLists, it can be send out.
-    Most of the time of Campain will have a one-to-one relationship with a
-    MailTemplate, but templates may be reused in other Campaigns and maybe
-    Campaigns will have support for multiple templates in the future, therefore
-    the distinction.
+    A Campaign is the central part of this app. Once a Campaign is
+    created, has a MailTemplate and one or more SubscriberLists, it
+    can be send out.  Most of the time of Campain will have a
+    one-to-one relationship with a MailTemplate, but templates may be
+    reused in other Campaigns and maybe Campaigns will have support
+    for multiple templates in the future, therefore the distinction.
+
     A Campaign optionally belongs to a Newsletter.
 
     """
-    name = models.CharField(_(u"Name"), max_length=255)
-    newsletter = models.ForeignKey(Newsletter, verbose_name=_(u"Newsletter"), blank=True, null=True)
-    template = models.ForeignKey(MailTemplate, verbose_name=_(u"Template"))
-    recipients = models.ManyToManyField(SubscriberList, verbose_name=_(u"Subscriber lists"))
-    sent = models.BooleanField(_(u"sent out"), default=False, editable=False)
-    sent_at = models.DateTimeField(_(u"sent at"), blank=True, null=True)
-    online = models.BooleanField(_(u"available online"), default=True, blank=True, help_text=_(u"make a copy available online"))
 
-    def __unicode__(self):
-        return self.name
-
-    def send(self):
-        """
-        Sends the mails to the recipients.
-        """
-        backend = get_backend()
-        num_sent = backend.send_campaign(self)
-        self.sent = True
-        self.sent_at = timezone.now()
-        self.save()
-        return num_sent
-
-    class Meta:
-        verbose_name = _("campaign")
-        verbose_name_plural = _("campaigns")
-        ordering = ('name', 'sent')
+    class Meta(CampaignAbstract.Meta):
+        abstract = False
+        swappable = swapper.swappable_setting('campaign', 'Campaign')
 
 
 class BlacklistEntry(models.Model):

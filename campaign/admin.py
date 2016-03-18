@@ -16,6 +16,9 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
+
+import swapper
+
 from campaign.models import MailTemplate, Campaign, BlacklistEntry, \
 SubscriberList, Newsletter
 
@@ -134,7 +137,9 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
         return urlpatterns
 
 
-admin.site.register(Campaign, CampaignAdmin)
+if not swapper.is_swapped('campaign', 'Campaign'):
+    admin.site.register(Campaign, CampaignAdmin)
+
 admin.site.register(MailTemplate)
 admin.site.register(BlacklistEntry, BlacklistEntryAdmin)
 admin.site.register(SubscriberList)
