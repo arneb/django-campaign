@@ -3,8 +3,12 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
-from campaign.models import Campaign, BlacklistEntry
+from campaign.models import BlacklistEntry
 from campaign.forms import SubscribeForm, UnsubscribeForm
+
+import swapper
+
+Campaign = swapper.load_model("campaign", "Campaign")
 
 
 def view_online(request, object_id):
