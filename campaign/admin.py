@@ -92,7 +92,7 @@ class CampaignAdmin(admin.ModelAdmin):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
+        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.model_name
 
         super_urlpatterns = super(CampaignAdmin, self).get_urls()
         urlpatterns = patterns('',
@@ -121,7 +121,7 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
+        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.model_name
 
         super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
         urlpatterns = patterns('',
