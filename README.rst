@@ -15,6 +15,7 @@ Features
 * Subscriberlists are defined as orm query parameters
 * Send mails from your own Server (through Django's email mechanism)
 * Send mails through Mandrill (a transactional email service from Mailchimp)
+* Send mails through Mailgun (a transactional email service)
 * Pluggable backends for integration with other email services
 * Make newsletters available online
 * Internal blacklist
