@@ -22,6 +22,7 @@ setup(
         'campaign',
         'campaign.backends',
         'campaign.migrations',
+        'campaign.management',
     ),
     package_data = {
         'campaign':
