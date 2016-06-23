@@ -9,7 +9,7 @@ from django.conf.urls import patterns, url
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.admin.utils import unquote
+from django.contrib.admin.util import unquote
 from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.http import HttpResponseRedirect
@@ -92,7 +92,7 @@ class CampaignAdmin(admin.ModelAdmin):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.model_name
+        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
 
         super_urlpatterns = super(CampaignAdmin, self).get_urls()
         urlpatterns = patterns('',
@@ -121,7 +121,7 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.model_name
+        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
 
         super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
         urlpatterns = patterns('',
