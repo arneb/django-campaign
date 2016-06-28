@@ -47,14 +47,18 @@ class MailgunApiBackend(BaseBackend):
 
     These settings will override the django-campaign defaults.
 
-    It is possible to specify a full From-Header (with Display-Name) for
-    every sending address in the setting::
+    If no sending name is specified in the database, the from header is
+    either determined from the CAMPAIGN_FROM_HEADERS setting or only the
+    plain email address is used.
 
-        settings.MAILGUN_FROM_HEADERS
+    To specify a from-header (with display-name) for a specific address
+    the following setting can be used::
+
+        settings.CAMPAIGN_FROM_HEADERS
 
     Example configuration::
 
-        MAILGUN_FROM_HEADERS = {
+        CAMPAIGN_FROM_HEADERS = {
             "newsletter@example.com": "Example Newsletter <newsletter@example.com>",
             "no-reply@test.com": "Test Sender <no-reply@test.com>"
         }
@@ -122,11 +126,12 @@ class MailgunApiBackend(BaseBackend):
         for recipients, recipient_vars in batches:
             from_email = self.get_from_email(campaign)
             from_domain = from_email.split('@')[-1]
+            from_header = self.get_from_header(campaign, from_email)
             api_url = getattr(settings, 'MAILGUN_API_URL', 'https://api.mailgun.net/v3/%s/messages') % from_domain
             auth = ("api", settings.MAILGUN_API_KEY)
             data = {
                 'to': recipients,
-                'from': getattr(settings, 'MAILGUN_FROM_HEADERS', {}).get(from_email, from_email),
+                'from': from_header,
                 'recipient-variables': json.dumps(recipient_vars),
                 'subject': subject,
                 'text': text_template.render(Context()),
@@ -163,5 +168,16 @@ class MailgunApiBackend(BaseBackend):
         except:
             pass
         return from_email
+
+    def get_from_header(self, campaign, from_email):
+        try:
+            from_name = campaign.newsletter.from_name or None
+        except:
+            from_name = None
+        if from_name:
+            from_header = u"%s <%s>" % (from_name, from_email)
+        else:
+            from_header = getattr(settings, 'CAMPAIGN_FROM_HEADERS', {}).get(from_email, from_email)
+        return from_header
 
 backend = MailgunApiBackend()
