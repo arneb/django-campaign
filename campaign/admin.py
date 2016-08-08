@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.admin.utils import unquote
+from django.contrib.admin.options import IS_POPUP_VAR
 from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.http import HttpResponseRedirect
@@ -73,7 +74,7 @@ class CampaignAdmin(admin.ModelAdmin):
             'title': _('Send %s') % force_unicode(opts.verbose_name),
             'object_id': object_id,
             'object': obj,
-            'is_popup': request.REQUEST.has_key('_popup'),
+            'is_popup': (IS_POPUP_VAR in request.POST or IS_POPUP_VAR in request.GET),
             'media': mark_safe(media),
             'app_label': opts.app_label,
             'opts': opts,
@@ -90,15 +91,16 @@ class CampaignAdmin(admin.ModelAdmin):
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
+            wrapper.model_admin = self
             return update_wrapper(wrapper, view)
 
-        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.model_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
         super_urlpatterns = super(CampaignAdmin, self).get_urls()
         urlpatterns = patterns('',
             url(r'^(.+)/send/$',
                 wrap(self.send_view),
-                name='%sadmin_%s_%s_send' % info),
+                name='%s_%s_send' % info),
         )
         urlpatterns += super_urlpatterns
 
@@ -119,15 +121,16 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
+            wrapper.model_admin = self
             return update_wrapper(wrapper, view)
 
-        info = self.admin_site.name, self.model._meta.app_label, self.model._meta.model_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
         super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
         urlpatterns = patterns('',
             url(r'^fetch_mandrill_rejects/$',
                 wrap(self.fetch_mandrill_rejects),
-                name='%sadmin_%s_%s_fetchmandrillrejects' % info),
+                name='%s_%s_fetchmandrillrejects' % info),
         )
         urlpatterns += super_urlpatterns
 
