@@ -29,9 +29,8 @@ class CampaignAdmin(admin.ModelAdmin):
     def has_send_permission(self, request, obj):
         """
         Subclasses may override this and implement more granular permissions.
-        TODO: integrate with django's permisson system
         """
-        return request.user.is_superuser
+        return request.user.has_perm("campaign.send_campaign")
 
 
     def send_view(self, request, object_id, extra_context=None):
