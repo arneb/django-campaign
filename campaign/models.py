@@ -123,6 +123,9 @@ class Campaign(models.Model):
         verbose_name = _("campaign")
         verbose_name_plural = _("campaigns")
         ordering = ('name', 'sent')
+        permissions = (
+            ("send_campaign", _("Can send campaign")),
+        )
 
 
 class BlacklistEntry(models.Model):
