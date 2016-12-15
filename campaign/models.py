@@ -75,7 +75,8 @@ class SubscriberList(models.Model):
         return fc
 
     def object_list(self):
-        return self.content_type.model_class()._default_manager.filter(**self._get_filter())
+        return self.content_type.model_class()._default_manager.filter(
+            **self._get_filter()).distinct()
 
     def object_count(self):
         return self.object_list().count()
