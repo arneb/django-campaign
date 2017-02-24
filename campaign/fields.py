@@ -26,12 +26,15 @@ class JSONFormField(forms.CharField):
             raise forms.ValidationError(u'JSON decode error: %s' % (unicode(exc),))
 
 class JSONField(models.TextField):
-    __metaclass__ = models.SubfieldBase
-
     def formfield(self, **kwargs):
         return super(JSONField, self).formfield(form_class=JSONFormField, **kwargs)
 
     def to_python(self, value):
+        if isinstance(value, basestring):
+            value = simplejson.loads(value)
+        return value
+
+    def from_db_value(self, value, expression, connection, context):
         if isinstance(value, basestring):
             value = simplejson.loads(value)
         return value
