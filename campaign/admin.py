@@ -5,7 +5,7 @@ try:
     from django.utils.functional import update_wrapper
 except ImportError:
     from functools import update_wrapper
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -96,11 +96,11 @@ class CampaignAdmin(admin.ModelAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         super_urlpatterns = super(CampaignAdmin, self).get_urls()
-        urlpatterns = patterns('',
+        urlpatterns = [
             url(r'^(.+)/send/$',
                 wrap(self.send_view),
                 name='%s_%s_send' % info),
-        )
+        ]
         urlpatterns += super_urlpatterns
 
         return urlpatterns
@@ -126,11 +126,11 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
-        urlpatterns = patterns('',
+        urlpatterns = [
             url(r'^fetch_mandrill_rejects/$',
                 wrap(self.fetch_mandrill_rejects),
                 name='%s_%s_fetchmandrillrejects' % info),
-        )
+        ]
         urlpatterns += super_urlpatterns
 
         return urlpatterns
