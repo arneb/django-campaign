@@ -44,20 +44,20 @@ class BaseBackend(object):
                     used_addresses.append(recipient_email)
         return sent
 
-    def send_mail(self, email, fail_silently=False):
+    def send_mail(self, email, fail_silently=False, newsletter=None):
         raise NotImplementedError
 
-    def get_from_email(self, campaign):
+    def get_from_email(self, newsletter):
         from_email = getattr(settings, 'CAMPAIGN_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
         try:
-            from_email = campaign.newsletter.from_email or from_email
+            from_email = newsletter.from_email or from_email
         except:
             pass
         return from_email
 
-    def get_from_header(self, campaign, from_email):
+    def get_from_header(self, newsletter, from_email):
         try:
-            from_name = campaign.newsletter.from_name or None
+            from_name = newsletter.from_name or None
         except:
             from_name = None
         if from_name:

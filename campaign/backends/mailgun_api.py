@@ -124,9 +124,9 @@ class MailgunApiBackend(BaseBackend):
             batches.append((batch_r, batch_v))
 
         for recipients, recipient_vars in batches:
-            from_email = self.get_from_email(campaign)
+            from_email = self.get_from_email(campaign.newsletter)
             from_domain = from_email.split('@')[-1]
-            from_header = self.get_from_header(campaign, from_email)
+            from_header = self.get_from_header(campaign.newsletter, from_email)
             api_url = getattr(settings, 'MAILGUN_API_URL', 'https://api.mailgun.net/v3/%s/messages') % from_domain
             auth = ("api", settings.MAILGUN_API_KEY)
             data = {
@@ -164,20 +164,9 @@ class MailgunApiBackend(BaseBackend):
             from_email = getattr(settings, 'CAMPAIGN_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
 
         try:
-            from_email = campaign.newsletter.from_email or from_email
+            from_email = newsletter.from_email or from_email
         except:
             pass
         return from_email
-
-    def get_from_header(self, campaign, from_email):
-        try:
-            from_name = campaign.newsletter.from_name or None
-        except:
-            from_name = None
-        if from_name:
-            from_header = u"%s <%s>" % (from_name, from_email)
-        else:
-            from_header = getattr(settings, 'CAMPAIGN_FROM_HEADERS', {}).get(from_email, from_email)
-        return from_header
 
 backend = MailgunApiBackend()

@@ -13,7 +13,7 @@ class SendMailBackend(BaseBackend):
 
     """
 
-    def send_mail(self, email, fail_silently=False):
+    def send_mail(self, email, fail_silently=False, newsletter=None):
         """
         Parameters:
 

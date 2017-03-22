@@ -120,14 +120,14 @@ class MandrillApiBackend(BaseBackend):
             if not fail_silently:
                 raise e
 
-    def get_from_email(self, campaign):
+    def get_from_email(self, newsletter):
         if hasattr(settings, 'MANDRILL_API_FROM_EMAIL'):
             from_email = settings.MANDRILL_API_FROM_EMAIL
         else:
             from_email = getattr(settings, 'CAMPAIGN_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL)
 
         try:
-            from_email = campaign.newsletter.from_email or from_email
+            from_email = newsletter.from_email or from_email
         except:
             pass
         return from_email
