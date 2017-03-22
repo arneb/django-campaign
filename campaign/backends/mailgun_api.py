@@ -157,7 +157,38 @@ class MailgunApiBackend(BaseBackend):
 
         return success_count
 
-    def get_from_email(self, campaign):
+    def send_mail(self, email, fail_silently=False, newsletter=None):
+        """
+        Parameters:
+
+        ``email``: an instance of django.core.mail.EmailMessage
+        ``fail_silently``: a boolean indicating if exceptions should bubble up
+        ``newsletter`` (optional): Newsletter object used to figure out the sender
+
+        """
+        from_email = self.get_from_email(newsletter)
+        from_domain = from_email.split('@')[-1]
+        from_header = self.get_from_header(newsletter, from_email)
+        api_url = getattr(settings, 'MAILGUN_API_URL', 'https://api.mailgun.net/v3/%s/messages') % from_domain
+        auth = ("api", settings.MAILGUN_API_KEY)
+        data = {
+            'to': email.to,
+            'from': from_header,
+            'subject': email.subject,
+            'text': email.body,
+        }
+
+        # update data with user supplied values from settings
+        data.update(getattr(settings, 'MAILGUN_API_SETTINGS', {}))
+        result = requests.post(api_url, auth=auth, data=data)
+        if result.status_code == 200:
+            return
+        else:
+            logger.error('Mailgun error: %s %s' % (result.status_code, result.text))
+            if not fail_silently:
+                raise Exception(result.text)
+
+    def get_from_email(self, newsletter):
         if hasattr(settings, 'MAILGUN_API_FROM_EMAIL'):
             from_email = settings.MAILGUN_API_FROM_EMAIL
         else:
