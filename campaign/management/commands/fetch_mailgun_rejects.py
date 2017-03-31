@@ -64,7 +64,7 @@ class Command(BaseCommand):
                         defaults={'reason': reject['error']}
                     )
         else:
-            logger.warning('Mailgun response: %s' % result.status_code)
+            logger.warning('Mailgun response: %s' % response.status_code)
 
         pagination = response.json()["paging"]
         if pagination.get("next") != pagination.get("previous"):
