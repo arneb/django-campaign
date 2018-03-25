@@ -1,6 +1,6 @@
 from django import template, http
 from django.conf import settings
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from campaign.models import Campaign, BlacklistEntry
@@ -42,8 +42,7 @@ def subscribe(request, template_name='campaign/subscribe.html',
     else:
         form = form_class()
     context.update({'form': form})
-    return render_to_response(template_name, context,
-                        context_instance=template.RequestContext(request))
+    return render(request, template_name, context)
 
 
 def unsubscribe(request, template_name='campaign/unsubscribe.html',
@@ -64,8 +63,7 @@ def unsubscribe(request, template_name='campaign/unsubscribe.html',
             initial['email'] = request.GET.get('email')
         form = form_class(initial=initial)
     context.update({'form': form})
-    return render_to_response(template_name, context,
-                        context_instance=template.RequestContext(request))
+    return render(request, template_name, context)
 
 
 def _get_callback(setting):

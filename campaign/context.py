@@ -34,9 +34,9 @@ class MailContext(Context):
     Additional processors can be specified as a list of callables
     using the "processors" keyword argument.
     """
-    def __init__(self, subscriber, dict_=None, processors=None, current_app=None,
+    def __init__(self, subscriber, dict_=None, processors=None, autoescape=True,
             use_l10n=None, use_tz=None):
-        Context.__init__(self, dict_, current_app=current_app,
+        Context.__init__(self, dict_, autoescape=autoescape,
                 use_l10n=use_l10n, use_tz=use_tz)
         if processors is None:
             processors = ()

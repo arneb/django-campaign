@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django import template
 from django import forms
 try:
@@ -80,10 +80,10 @@ class CampaignAdmin(admin.ModelAdmin):
         }
         context.update(extra_context or {})
 
-        return render_to_response(self.send_template or
+        return render(request, self.send_template or
             ['admin/%s/%s/send_object.html' % (opts.app_label, opts.object_name.lower()),
             'admin/%s/send_object.html' % opts.app_label,
-            'admin/send_object.html'], context, context_instance=template.RequestContext(request))
+            'admin/send_object.html'], context)
 
 
     def get_urls(self):
