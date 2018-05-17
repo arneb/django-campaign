@@ -1,5 +1,8 @@
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.db import models
+from django.utils import six
 from django import forms
 try:
     from django.utils import simplejson
@@ -9,7 +12,7 @@ except ImportError:
 
 class JSONWidget(forms.Textarea):
     def render(self, name, value, attrs=None):
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             value = simplejson.dumps(value, indent=2)
         return super(JSONWidget, self).render(name, value, attrs)
 
@@ -22,20 +25,20 @@ class JSONFormField(forms.CharField):
         if not value: return
         try:
             return simplejson.loads(value)
-        except Exception, exc:
-            raise forms.ValidationError(u'JSON decode error: %s' % (unicode(exc),))
+        except Exception as exc:
+            raise forms.ValidationError('JSON decode error: %s' % (str(exc),))
 
 class JSONField(models.TextField):
     def formfield(self, **kwargs):
         return super(JSONField, self).formfield(form_class=JSONFormField, **kwargs)
 
     def to_python(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = simplejson.loads(value)
         return value
 
     def from_db_value(self, value, expression, connection, context):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = simplejson.loads(value)
         return value
 

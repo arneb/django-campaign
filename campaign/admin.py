@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.shortcuts import render
 from django import template
 from django import forms
@@ -15,7 +17,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from campaign.models import MailTemplate, Campaign, BlacklistEntry, \
 SubscriberList, Newsletter
@@ -52,14 +54,14 @@ class CampaignAdmin(admin.ModelAdmin):
             raise PermissionDenied
 
         if obj is None:
-            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(opts.verbose_name), 'key': escape(object_id)})
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_text(opts.verbose_name), 'key': escape(object_id)})
 
         if request.method == 'POST':
             if not request.POST.get('send', None) == '1':
                 raise PermissionDenied
 
             num_sent = obj.send()
-            messages.success(request, _(u'The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj), 'num_sent': num_sent,}))
+            messages.success(request, _('The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_text(opts.verbose_name), 'obj': force_text(obj), 'num_sent': num_sent,}))
             return HttpResponseRedirect('../')
 
 
@@ -70,7 +72,7 @@ class CampaignAdmin(admin.ModelAdmin):
         media = self.media + form_media()
 
         context = {
-            'title': _('Send %s') % force_unicode(opts.verbose_name),
+            'title': _('Send %s') % force_text(opts.verbose_name),
             'object_id': object_id,
             'object': obj,
             'is_popup': (IS_POPUP_VAR in request.POST or IS_POPUP_VAR in request.GET),

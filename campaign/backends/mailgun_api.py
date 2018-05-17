@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import logging
 import json
 import requests
@@ -81,7 +83,7 @@ class MailgunApiBackend(BaseBackend):
 
         subject = campaign.template.subject
         text_template = template.Template(campaign.template.plain)
-        if campaign.template.html is not None and campaign.template.html != u"":
+        if campaign.template.html is not None and campaign.template.html != "":
             html_template = template.Template(campaign.template.html)
         else:
             html_template = None
@@ -100,12 +102,13 @@ class MailgunApiBackend(BaseBackend):
                     context = MailContext(recipient)
                     if campaign.online:
                         context.update({
-                            'view_online_url': reverse("campaign_view_online", kwargs={'object_id': campaign.pk}),
+                            'view_online_url': reverse("campaign_view_online", kwargs={
+                                'object_id': campaign.pk}),
                             'site_url': Site.objects.get_current().domain,
                             'recipient_email': recipient_email
                         })
                     the_recipient_vars = {}
-                    for k, v in context.flatten().iteritems():
+                    for k, v in context.flatten().items():
                         the_recipient_vars.update({k: v})
                     recipient_vars.update({recipient_email: the_recipient_vars})
 
@@ -175,7 +178,7 @@ class MailgunApiBackend(BaseBackend):
         except:
             from_name = None
         if from_name:
-            from_header = u"%s <%s>" % (from_name, from_email)
+            from_header = "%s <%s>" % (from_name, from_email)
         else:
             from_header = getattr(settings, 'CAMPAIGN_FROM_HEADERS', {}).get(from_email, from_email)
         return from_header
