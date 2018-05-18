@@ -1,11 +1,13 @@
-from django.shortcuts import render_to_response
+from __future__ import unicode_literals
+
+from django.shortcuts import render
 from django import template
 from django import forms
 try:
     from django.utils.functional import update_wrapper
 except ImportError:
     from functools import update_wrapper
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -15,7 +17,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from campaign.models import MailTemplate, Campaign, BlacklistEntry, \
 SubscriberList, Newsletter
@@ -52,14 +54,14 @@ class CampaignAdmin(admin.ModelAdmin):
             raise PermissionDenied
 
         if obj is None:
-            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(opts.verbose_name), 'key': escape(object_id)})
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_text(opts.verbose_name), 'key': escape(object_id)})
 
         if request.method == 'POST':
             if not request.POST.get('send', None) == '1':
                 raise PermissionDenied
 
             num_sent = obj.send()
-            messages.success(request, _(u'The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_unicode(opts.verbose_name), 'obj': force_unicode(obj), 'num_sent': num_sent,}))
+            messages.success(request, _('The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_text(opts.verbose_name), 'obj': force_text(obj), 'num_sent': num_sent,}))
             return HttpResponseRedirect('../')
 
 
@@ -70,7 +72,7 @@ class CampaignAdmin(admin.ModelAdmin):
         media = self.media + form_media()
 
         context = {
-            'title': _('Send %s') % force_unicode(opts.verbose_name),
+            'title': _('Send %s') % force_text(opts.verbose_name),
             'object_id': object_id,
             'object': obj,
             'is_popup': (IS_POPUP_VAR in request.POST or IS_POPUP_VAR in request.GET),
@@ -80,10 +82,10 @@ class CampaignAdmin(admin.ModelAdmin):
         }
         context.update(extra_context or {})
 
-        return render_to_response(self.send_template or
+        return render(request, self.send_template or
             ['admin/%s/%s/send_object.html' % (opts.app_label, opts.object_name.lower()),
             'admin/%s/send_object.html' % opts.app_label,
-            'admin/send_object.html'], context, context_instance=template.RequestContext(request))
+            'admin/send_object.html'], context)
 
 
     def get_urls(self):
@@ -96,11 +98,11 @@ class CampaignAdmin(admin.ModelAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         super_urlpatterns = super(CampaignAdmin, self).get_urls()
-        urlpatterns = patterns('',
+        urlpatterns = [
             url(r'^(.+)/send/$',
                 wrap(self.send_view),
                 name='%s_%s_send' % info),
-        )
+        ]
         urlpatterns += super_urlpatterns
 
         return urlpatterns
@@ -126,11 +128,11 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
-        urlpatterns = patterns('',
+        urlpatterns = [
             url(r'^fetch_mandrill_rejects/$',
                 wrap(self.fetch_mandrill_rejects),
                 name='%s_%s_fetchmandrillrejects' % info),
-        )
+        ]
         urlpatterns += super_urlpatterns
 
         return urlpatterns

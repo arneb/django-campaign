@@ -22,4 +22,4 @@ feel free to mount the app under a different URL::
         (r'^campaign/', include('campaign.urls'))
     )
 
-4. Then run ``manage.py syncdb`` to create the neccessary database tables.
+4. Then run ``manage.py migrate`` to create the neccessary database tables.

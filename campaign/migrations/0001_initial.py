@@ -1,4 +1,6 @@
-# encoding: utf8
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.db import models, migrations
 import django.utils.timezone
 import campaign.fields
@@ -7,100 +9,100 @@ import campaign.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        (u'contenttypes', '__first__'),
+        ('contenttypes', '__first__'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='BlacklistEntry',
             fields=[
-                (u'id', models.AutoField(verbose_name=u'ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('email', models.EmailField(max_length=75)),
                 ('added', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
             ],
             options={
-                u'ordering': ('-added',),
-                u'verbose_name': u'blacklist entry',
-                u'verbose_name_plural': u'blacklist entries',
+                'ordering': ('-added',),
+                'verbose_name': 'blacklist entry',
+                'verbose_name_plural': 'blacklist entries',
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='MailTemplate',
             fields=[
-                (u'id', models.AutoField(verbose_name=u'ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255, verbose_name=u'Name')),
-                ('plain', models.TextField(verbose_name=u'Plaintext Body')),
-                ('html', models.TextField(null=True, verbose_name=u'HTML Body', blank=True)),
-                ('subject', models.CharField(max_length=255, verbose_name=u'Subject')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255, verbose_name='Name')),
+                ('plain', models.TextField(verbose_name='Plaintext Body')),
+                ('html', models.TextField(null=True, verbose_name='HTML Body', blank=True)),
+                ('subject', models.CharField(max_length=255, verbose_name='Subject')),
             ],
             options={
-                u'ordering': ('name',),
-                u'verbose_name': u'mail template',
-                u'verbose_name_plural': u'mail templates',
+                'ordering': ('name',),
+                'verbose_name': 'mail template',
+                'verbose_name_plural': 'mail templates',
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Newsletter',
             fields=[
-                (u'id', models.AutoField(verbose_name=u'ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255, verbose_name=u'Name')),
-                ('description', models.TextField(null=True, verbose_name=u'Description', blank=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255, verbose_name='Name')),
+                ('description', models.TextField(null=True, verbose_name='Description', blank=True)),
             ],
             options={
-                u'ordering': ('name',),
-                u'verbose_name': u'newsletter',
-                u'verbose_name_plural': u'newsletters',
+                'ordering': ('name',),
+                'verbose_name': 'newsletter',
+                'verbose_name_plural': 'newsletters',
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='BounceEntry',
             fields=[
-                (u'id', models.AutoField(verbose_name=u'ID', serialize=False, auto_created=True, primary_key=True)),
-                ('email', models.CharField(max_length=255, null=True, verbose_name=u'recipient', blank=True)),
-                ('exception', models.TextField(null=True, verbose_name=u'exception', blank=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('email', models.CharField(max_length=255, null=True, verbose_name='recipient', blank=True)),
+                ('exception', models.TextField(null=True, verbose_name='exception', blank=True)),
             ],
             options={
-                u'ordering': ('email',),
-                u'verbose_name': u'bounce entry',
-                u'verbose_name_plural': u'bounce entries',
+                'ordering': ('email',),
+                'verbose_name': 'bounce entry',
+                'verbose_name_plural': 'bounce entries',
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='SubscriberList',
             fields=[
-                (u'id', models.AutoField(verbose_name=u'ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255, verbose_name=u'Name')),
-                ('content_type', models.ForeignKey(to=u'contenttypes.ContentType', to_field=u'id')),
-                ('filter_condition', campaign.fields.JSONField(default='{}', help_text=u'Django ORM compatible lookup kwargs which are used to get the list of objects.')),
-                ('email_field_name', models.CharField(help_text=u'Name of the model field which stores the recipients email address', max_length=64, verbose_name=u'Email-Field name')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255, verbose_name='Name')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', to_field='id')),
+                ('filter_condition', campaign.fields.JSONField(default='{}', help_text='Django ORM compatible lookup kwargs which are used to get the list of objects.')),
+                ('email_field_name', models.CharField(help_text='Name of the model field which stores the recipients email address', max_length=64, verbose_name='Email-Field name')),
             ],
             options={
-                u'ordering': ('name',),
-                u'verbose_name': u'subscriber list',
-                u'verbose_name_plural': u'subscriber lists',
+                'ordering': ('name',),
+                'verbose_name': 'subscriber list',
+                'verbose_name_plural': 'subscriber lists',
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Campaign',
             fields=[
-                (u'id', models.AutoField(verbose_name=u'ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255, verbose_name=u'Name')),
-                ('newsletter', models.ForeignKey(verbose_name=u'Newsletter', to_field=u'id', blank=True, to='campaign.Newsletter', null=True)),
-                ('template', models.ForeignKey(to='campaign.MailTemplate', to_field=u'id', verbose_name=u'Template')),
-                ('sent', models.BooleanField(default=False, verbose_name=u'sent out', editable=False)),
-                ('sent_at', models.DateTimeField(null=True, verbose_name=u'sent at', blank=True)),
-                ('online', models.BooleanField(default=True, help_text=u'make a copy available online', verbose_name=u'available online')),
-                ('recipients', models.ManyToManyField(to='campaign.SubscriberList', verbose_name=u'Subscriber lists')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255, verbose_name='Name')),
+                ('newsletter', models.ForeignKey(verbose_name='Newsletter', to_field='id', blank=True, to='campaign.Newsletter', null=True)),
+                ('template', models.ForeignKey(to='campaign.MailTemplate', to_field='id', verbose_name='Template')),
+                ('sent', models.BooleanField(default=False, verbose_name='sent out', editable=False)),
+                ('sent_at', models.DateTimeField(null=True, verbose_name='sent at', blank=True)),
+                ('online', models.BooleanField(default=True, help_text='make a copy available online', verbose_name='available online')),
+                ('recipients', models.ManyToManyField(to='campaign.SubscriberList', verbose_name='Subscriber lists')),
             ],
             options={
-                u'ordering': ('name', 'sent'),
-                u'verbose_name': u'campaign',
-                u'verbose_name_plural': u'campaigns',
+                'ordering': ('name', 'sent'),
+                'verbose_name': 'campaign',
+                'verbose_name_plural': 'campaigns',
             },
             bases=(models.Model,),
         ),

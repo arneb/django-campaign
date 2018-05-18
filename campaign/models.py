@@ -1,5 +1,8 @@
+from __future__ import unicode_literals
+
 from django import template
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
@@ -11,17 +14,18 @@ from campaign.context import MailContext
 from campaign.backends import get_backend
 
 
+@python_2_unicode_compatible
 class Newsletter(models.Model):
     """
     Represents a recurring newsletter which users can subscribe to.
 
     """
-    name = models.CharField(_(u"Name"), max_length=255)
-    description = models.TextField(_(u"Description"), blank=True, null=True)
-    from_email = models.EmailField(_(u"Sending Address"), blank=True, null=True)
-    from_name = models.CharField(_(u"Sender Name"), max_length=255, blank=True, null=True)
+    name = models.CharField(_("Name"), max_length=255)
+    description = models.TextField(_("Description"), blank=True, null=True)
+    from_email = models.EmailField(_("Sending Address"), blank=True, null=True)
+    from_name = models.CharField(_("Sender Name"), max_length=255, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -30,6 +34,7 @@ class Newsletter(models.Model):
         ordering = ('name',)
 
 
+@python_2_unicode_compatible
 class MailTemplate(models.Model):
     """
     Holds a template for the email. Both, HTML and plaintext, versions
@@ -39,12 +44,12 @@ class MailTemplate(models.Model):
     I don't like them.
 
     """
-    name = models.CharField(_(u"Name"), max_length=255)
-    plain = models.TextField(_(u"Plaintext Body"))
-    html = models.TextField(_(u"HTML Body"), blank=True, null=True)
-    subject = models.CharField(_(u"Subject"), max_length=255)
+    name = models.CharField(_("Name"), max_length=255)
+    plain = models.TextField(_("Plaintext Body"))
+    html = models.TextField(_("HTML Body"), blank=True, null=True)
+    subject = models.CharField(_("Subject"), max_length=255)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -53,24 +58,25 @@ class MailTemplate(models.Model):
         ordering = ('name',)
 
 
+@python_2_unicode_compatible
 class SubscriberList(models.Model):
     """
     A pointer to another Django model which holds the subscribers.
 
     """
-    name = models.CharField(_(u"Name"), max_length=255)
+    name = models.CharField(_("Name"), max_length=255)
     content_type = models.ForeignKey(ContentType)
-    filter_condition = JSONField(default="{}", help_text=_(u"Django ORM compatible lookup kwargs which are used to get the list of objects."))
-    email_field_name = models.CharField(_(u"Email-Field name"), max_length=64, help_text=_(u"Name of the model field which stores the recipients email address"))
+    filter_condition = JSONField(default="{}", help_text=_("Django ORM compatible lookup kwargs which are used to get the list of objects."))
+    email_field_name = models.CharField(_("Email-Field name"), max_length=64, help_text=_("Name of the model field which stores the recipients email address"))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def _get_filter(self):
         # simplejson likes to put unicode objects as dictionary keys
         # but keyword arguments must be str type
         fc = {}
-        for k,v in self.filter_condition.iteritems():
+        for k,v in self.filter_condition.items():
             fc.update({str(k): v})
         return fc
 
@@ -87,6 +93,7 @@ class SubscriberList(models.Model):
         ordering = ('name',)
 
 
+@python_2_unicode_compatible
 class Campaign(models.Model):
     """
     A Campaign is the central part of this app. Once a Campaign is created,
@@ -98,15 +105,15 @@ class Campaign(models.Model):
     A Campaign optionally belongs to a Newsletter.
 
     """
-    name = models.CharField(_(u"Name"), max_length=255)
-    newsletter = models.ForeignKey(Newsletter, verbose_name=_(u"Newsletter"), blank=True, null=True)
-    template = models.ForeignKey(MailTemplate, verbose_name=_(u"Template"))
-    recipients = models.ManyToManyField(SubscriberList, verbose_name=_(u"Subscriber lists"))
-    sent = models.BooleanField(_(u"sent out"), default=False, editable=False)
-    sent_at = models.DateTimeField(_(u"sent at"), blank=True, null=True)
-    online = models.BooleanField(_(u"available online"), default=True, blank=True, help_text=_(u"make a copy available online"))
+    name = models.CharField(_("Name"), max_length=255)
+    newsletter = models.ForeignKey(Newsletter, verbose_name=_("Newsletter"), blank=True, null=True)
+    template = models.ForeignKey(MailTemplate, verbose_name=_("Template"))
+    recipients = models.ManyToManyField(SubscriberList, verbose_name=_("Subscriber lists"))
+    sent = models.BooleanField(_("sent out"), default=False, editable=False)
+    sent_at = models.DateTimeField(_("sent at"), blank=True, null=True)
+    online = models.BooleanField(_("available online"), default=True, blank=True, help_text=_("make a copy available online"))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def send(self):
@@ -129,6 +136,7 @@ class Campaign(models.Model):
         )
 
 
+@python_2_unicode_compatible
 class BlacklistEntry(models.Model):
     """
     If a user has requested removal from the subscriber-list, he is added
@@ -137,9 +145,9 @@ class BlacklistEntry(models.Model):
     """
     email = models.EmailField()
     added = models.DateTimeField(default=timezone.now, editable=False)
-    reason = models.TextField(_(u"reason"), blank=True, null=True)
+    reason = models.TextField(_("reason"), blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.email
 
     class Meta:
