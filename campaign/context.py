@@ -16,7 +16,7 @@ def get_mail_processors():
             module, attr = path[:i], path[i+1:]
             try:
                 mod = __import__(module, {}, {}, [attr])
-            except ImportError, e:
+            except ImportError as e:
                 raise ImproperlyConfigured('Error importing campaign processor module %s: "%s"' % (module, e))
             try:
                 func = getattr(mod, attr)
@@ -34,9 +34,9 @@ class MailContext(Context):
     Additional processors can be specified as a list of callables
     using the "processors" keyword argument.
     """
-    def __init__(self, subscriber, dict_=None, processors=None, current_app=None,
+    def __init__(self, subscriber, dict_=None, processors=None, autoescape=True,
             use_l10n=None, use_tz=None):
-        Context.__init__(self, dict_, current_app=current_app,
+        Context.__init__(self, dict_, autoescape=autoescape,
                 use_l10n=use_l10n, use_tz=use_tz)
         if processors is None:
             processors = ()

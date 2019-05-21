@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import logging
 import mandrill
 from django.conf import settings
@@ -28,11 +30,11 @@ class Command(NoArgsCommand):
 
             for reject in rejects:
                 if reject['reason'] in ('hard-bounce', 'spam', 'unsub'):
-                    defaults = {'reason': u"%s: %s" % (reject['reason'],
+                    defaults = {'reason': "%s: %s" % (reject['reason'],
                                                        reject['detail'])}
                     BlacklistEntry.objects.get_or_create(email=reject['email'],
                                                          defaults=defaults)
 
-        except mandrill.Error, e:
+        except mandrill.Error as e:
             logger.error('Mandrill error: %s - %s' % (e.__class__, e))
             raise e

@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django import template
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -20,7 +22,7 @@ class BaseBackend(object):
         from_header = self.get_from_header(campaign, from_email)
         subject = campaign.template.subject
         text_template = template.Template(campaign.template.plain)
-        if campaign.template.html is not None and campaign.template.html != u"":
+        if campaign.template.html is not None and campaign.template.html != "":
             html_template = template.Template(campaign.template.html)
 
         sent = 0
@@ -34,10 +36,11 @@ class BaseBackend(object):
                     context = self.context_class(recipient)
                     context.update({'recipient_email': recipient_email})
                     if campaign.online:
-                        context.update({'view_online_url': reverse("campaign_view_online", kwargs={'object_id': campaign.pk}),
+                        context.update({'view_online_url': reverse("campaign_view_online", kwargs={
+                                        'object_id': campaign.pk}),
                                         'site_url': Site.objects.get_current().domain})
                     msg.body = text_template.render(context)
-                    if campaign.template.html is not None and campaign.template.html != u"":
+                    if campaign.template.html is not None and campaign.template.html != "":
                         html_content = html_template.render(context)
                         msg.attach_alternative(html_content, 'text/html')
                     sent += self.send_mail(msg, fail_silently)
