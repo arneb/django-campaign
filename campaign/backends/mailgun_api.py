@@ -5,7 +5,7 @@ import json
 import requests
 from django.template import Context
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.sites.models import Site
 from django import template
 from campaign.backends.base import BaseBackend

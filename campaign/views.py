@@ -3,8 +3,9 @@ from __future__ import unicode_literals
 from django import template, http
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.sites.models import Site
+from django.core.exceptions import ImproperlyConfigured
 from campaign.models import Campaign, BlacklistEntry
 from campaign.forms import SubscribeForm, UnsubscribeForm
 

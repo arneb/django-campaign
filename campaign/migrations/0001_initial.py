@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255, verbose_name='Name')),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType', to_field='id')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', to_field='id', on_delete=models.CASCADE)),
                 ('filter_condition', campaign.fields.JSONField(default='{}', help_text='Django ORM compatible lookup kwargs which are used to get the list of objects.')),
                 ('email_field_name', models.CharField(help_text='Name of the model field which stores the recipients email address', max_length=64, verbose_name='Email-Field name')),
             ],
@@ -92,8 +92,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255, verbose_name='Name')),
-                ('newsletter', models.ForeignKey(verbose_name='Newsletter', to_field='id', blank=True, to='campaign.Newsletter', null=True)),
-                ('template', models.ForeignKey(to='campaign.MailTemplate', to_field='id', verbose_name='Template')),
+                ('newsletter', models.ForeignKey(verbose_name='Newsletter', to_field='id', blank=True, to='campaign.Newsletter', null=True, on_delete=models.CASCADE)),
+                ('template', models.ForeignKey(to='campaign.MailTemplate', to_field='id', verbose_name='Template', on_delete=models.CASCADE)),
                 ('sent', models.BooleanField(default=False, verbose_name='sent out', editable=False)),
                 ('sent_at', models.DateTimeField(null=True, verbose_name='sent at', blank=True)),
                 ('online', models.BooleanField(default=True, help_text='make a copy available online', verbose_name='available online')),
