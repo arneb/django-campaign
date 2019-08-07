@@ -6,7 +6,6 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
-from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from campaign.fields import JSONField
@@ -65,7 +64,7 @@ class SubscriberList(models.Model):
 
     """
     name = models.CharField(_("Name"), max_length=255)
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     filter_condition = JSONField(default="{}", help_text=_("Django ORM compatible lookup kwargs which are used to get the list of objects."))
     email_field_name = models.CharField(_("Email-Field name"), max_length=64, help_text=_("Name of the model field which stores the recipients email address"))
 
@@ -106,8 +105,8 @@ class Campaign(models.Model):
 
     """
     name = models.CharField(_("Name"), max_length=255)
-    newsletter = models.ForeignKey(Newsletter, verbose_name=_("Newsletter"), blank=True, null=True)
-    template = models.ForeignKey(MailTemplate, verbose_name=_("Template"))
+    newsletter = models.ForeignKey(Newsletter, verbose_name=_("Newsletter"), blank=True, null=True, on_delete=models.CASCADE)
+    template = models.ForeignKey(MailTemplate, verbose_name=_("Template"), on_delete=models.CASCADE)
     recipients = models.ManyToManyField(SubscriberList, verbose_name=_("Subscriber lists"))
     sent = models.BooleanField(_("sent out"), default=False, editable=False)
     sent_at = models.DateTimeField(_("sent at"), blank=True, null=True)
