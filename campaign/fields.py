@@ -11,7 +11,7 @@ except ImportError:
 
 
 class JSONWidget(forms.Textarea):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, six.string_types):
             value = simplejson.dumps(value, indent=2)
         return super(JSONWidget, self).render(name, value, attrs)
