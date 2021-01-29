@@ -2,6 +2,9 @@
 Newsletter management for the Django webframework
 =================================================
 
+.. image:: https://img.shields.io/pypi/v/django-campaign.svg
+    :target: https://pypi.python.org/pypi/django-campaign/
+
 Django-campaign is a newsletter campaign management app for the Django
 webframework. It can manage multiple newsletters with different subscriberlists.
 
