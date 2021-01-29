@@ -64,7 +64,7 @@ class SubscriberList(models.Model):
 
     """
     name = models.CharField(_("Name"), max_length=255)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, verbose_name=ContentType._meta.verbose_name)
     filter_condition = JSONField(default="{}", help_text=_("Django ORM compatible lookup kwargs which are used to get the list of objects."))
     email_field_name = models.CharField(_("Email-Field name"), max_length=64, help_text=_("Name of the model field which stores the recipients email address"))
 

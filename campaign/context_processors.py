@@ -2,6 +2,7 @@
 def recipient(recipient):
     return {'recipient': recipient}
 
+
 def recipient_dict(recipient):
     recipient_dict = {}
     for k,v in recipient.__dict__.items():

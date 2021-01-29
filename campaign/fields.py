@@ -16,6 +16,7 @@ class JSONWidget(forms.Textarea):
             value = simplejson.dumps(value, indent=2)
         return super(JSONWidget, self).render(name, value, attrs)
 
+
 class JSONFormField(forms.CharField):
     def __init__(self, *args, **kwargs):
         kwargs['widget'] = JSONWidget
@@ -27,6 +28,7 @@ class JSONFormField(forms.CharField):
             return simplejson.loads(value)
         except Exception as exc:
             raise forms.ValidationError('JSON decode error: %s' % (str(exc),))
+
 
 class JSONField(models.TextField):
     def formfield(self, **kwargs):
@@ -49,6 +51,7 @@ class JSONField(models.TextField):
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
         return self.get_db_prep_value(value)
+
 
 if 'south' in settings.INSTALLED_APPS:
     from south.modelsinspector import add_introspection_rules

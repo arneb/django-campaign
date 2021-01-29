@@ -19,8 +19,11 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from campaign.models import MailTemplate, Campaign, BlacklistEntry, \
-SubscriberList, Newsletter
+
+from campaign.forms import SubscriberListForm
+from campaign.models import (
+    BlacklistEntry, Campaign, MailTemplate, Newsletter, SubscriberList
+)
 
 
 class CampaignAdmin(admin.ModelAdmin):
@@ -138,8 +141,66 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
         return urlpatterns
 
 
+class SubscriberListAdmin(admin.ModelAdmin):
+    form = SubscriberListForm
+    preview_template = None
+
+    def preview_view(self, request, object_id, extra_context=None):
+        """
+        Allows to view a preview of selected susbcribers.
+        """
+        model = self.model
+        opts = model._meta
+
+        try:
+            obj = model._default_manager.get(pk=unquote(object_id))
+        except model.DoesNotExist:
+            # Don't raise Http404 just yet, because we haven't checked
+            # permissions yet. We don't want an unauthenticated user to be able
+            # to determine whether a given object exists.
+            obj = None
+
+        if obj is None:
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_text(opts.verbose_name), 'key': escape(object_id)})
+
+        context = {
+            'title': _('Preview %s') % force_text(opts.verbose_name),
+            'object_id': object_id,
+            'object': obj,
+            'is_popup': (IS_POPUP_VAR in request.POST or IS_POPUP_VAR in request.GET),
+            'media': mark_safe(self.media),
+            'app_label': opts.app_label,
+            'opts': opts,
+        }
+        context.update(extra_context or {})
+
+        return render(request, self.preview_template or
+            ['admin/%s/%s/preview.html' % (opts.app_label, opts.object_name.lower()),
+            'admin/%s/preview.html' % opts.app_label,
+            'admin/preview.html'], context)
+
+    def get_urls(self):
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(view)(*args, **kwargs)
+            wrapper.model_admin = self
+            return update_wrapper(wrapper, view)
+
+        info = self.model._meta.app_label, self.model._meta.model_name
+
+        super_urlpatterns = super(SubscriberListAdmin, self).get_urls()
+        urlpatterns = [
+            url(r'^(.+)/preview/$',
+                wrap(self.preview_view),
+                name='%s_%s_preview' % info),
+        ]
+        urlpatterns += super_urlpatterns
+
+        return urlpatterns
+
+
 admin.site.register(Campaign, CampaignAdmin)
-admin.site.register(MailTemplate)
 admin.site.register(BlacklistEntry, BlacklistEntryAdmin)
-admin.site.register(SubscriberList)
+admin.site.register(SubscriberList, SubscriberListAdmin)
+admin.site.register(MailTemplate)
 admin.site.register(Newsletter, list_display=('name', 'from_email', 'from_name'))
