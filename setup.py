@@ -10,7 +10,7 @@ setup(
     license="BSD",
     url='https://github.com/arneb/django-campaign/',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
@@ -21,13 +21,18 @@ setup(
     packages = (
         'campaign',
         'campaign.backends',
-        'campaign.migrations',
         'campaign.management',
         'campaign.management.commands',
+        'campaign.migrations',
+        'campaign.templatetags',
     ),
     package_data = {
         'campaign':
-            ['templates/admin/campaign/campaign/*.html',
-             'templates/campaign/*.html'],
+            [
+                'templates/admin/campaign/blacklistentry/*.html',
+                'templates/admin/campaign/campaign/*.html',
+                'templates/admin/campaign/subscriberlist/*.html',
+                'templates/campaign/*.html'
+            ],
     }
 )

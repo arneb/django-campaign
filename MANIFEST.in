@@ -1,5 +1,8 @@
 include AUTHORS
 include LICENSE
 include README.rst
+include CHANGES.md
+include tox.ini
 recursive-include docs *
+recursive-include tests *
 recursive-include campaign/templates *
