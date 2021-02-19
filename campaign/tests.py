@@ -1,3 +1,8 @@
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
+
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 try:
@@ -10,6 +15,8 @@ from campaign.forms import SubscriberListForm
 from campaign.models import (
     BlacklistEntry, Campaign, MailTemplate, Newsletter, SubscriberList
 )
+from campaign.signals import campaign_sent
+
 
 User = get_user_model()
 
@@ -72,3 +79,21 @@ class AdminTestCase(TestCase):
             self.assertEqual(response.status_code, 200)
             content = response.content.decode("utf-8")
             self.assertTrue('id="%s_form"' % model._meta.model_name in content)
+
+
+class SendCampaignTestCase(TestCase):
+    def test_signal_is_sent(self):
+        handler = MagicMock()
+        campaign_sent.connect(handler, sender=Campaign)
+
+        template = MailTemplate.objects.create(
+            name="tpl", plain="foo", subject="sbj"
+        )
+        campaign = Campaign.objects.create(name="test", template=template)
+        campaign.send()
+
+        handler.assert_called_once_with(
+            signal=campaign_sent,
+            campaign=campaign,
+            sender=Campaign,
+        )

@@ -11,6 +11,7 @@ from django.contrib.sites.models import Site
 from campaign.fields import JSONField
 from campaign.context import MailContext
 from campaign.backends import get_backend
+from campaign.signals import campaign_sent
 
 
 @python_2_unicode_compatible
@@ -124,6 +125,7 @@ class Campaign(models.Model):
         self.sent = True
         self.sent_at = timezone.now()
         self.save()
+        campaign_sent.send(sender=self.__class__, campaign=self)
         return num_sent
 
     class Meta:
