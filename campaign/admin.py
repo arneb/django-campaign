@@ -29,6 +29,7 @@ from campaign.models import (
 class CampaignAdmin(admin.ModelAdmin):
     filter_horizontal=('recipients',)
     list_display=('name', 'newsletter', 'sent', 'sent_at', 'online')
+    change_form_template = "admin/campaign/campaign/change_form.html"
     send_template = None
 
     def has_send_permission(self, request, obj):
@@ -86,8 +87,8 @@ class CampaignAdmin(admin.ModelAdmin):
         context.update(extra_context or {})
 
         return render(request, self.send_template or
-            ['admin/%s/%s/send_object.html' % (opts.app_label, opts.object_name.lower()),
-            'admin/%s/send_object.html' % opts.app_label,
+            ['admin/campaign/%s/send_object.html' % (opts.object_name.lower()),
+            'admin/campaign/send_object.html',
             'admin/send_object.html'], context)
 
 
@@ -113,6 +114,7 @@ class CampaignAdmin(admin.ModelAdmin):
 
 class BlacklistEntryAdmin(admin.ModelAdmin):
     list_display=('email', 'added')
+    changelist_template = "admin/campaign/blacklistentry/change_list.html"
 
     def fetch_mandrill_rejects(self, request):
         call_command('fetch_mandrill_rejects')
@@ -143,6 +145,7 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
 
 class SubscriberListAdmin(admin.ModelAdmin):
     form = SubscriberListForm
+    change_form_template = "admin/campaign/subscriberlist/change_form.html"
     preview_template = None
 
     def preview_view(self, request, object_id, extra_context=None):
@@ -175,8 +178,8 @@ class SubscriberListAdmin(admin.ModelAdmin):
         context.update(extra_context or {})
 
         return render(request, self.preview_template or
-            ['admin/%s/%s/preview.html' % (opts.app_label, opts.object_name.lower()),
-            'admin/%s/preview.html' % opts.app_label,
+            ['admin/campaign/%s/preview.html' % (opts.object_name.lower()),
+            'admin/campaign/preview.html',
             'admin/preview.html'], context)
 
     def get_urls(self):
