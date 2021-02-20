@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.5.1] - 2021-02-20
+### Added
+- Added 'campaign_sent' signal, triggered whenever a Campaign is sent
+
+### Fixed
+- Use hardcoded app_label 'campaign' in template resolution so app_label overrides via custom AppConfig don't interfere with our admin template overrides.
 
 ## [0.5.0] - 2021-01-29
 ### Added
