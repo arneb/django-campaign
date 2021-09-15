@@ -1,12 +1,8 @@
-from __future__ import unicode_literals
+from functools import update_wrapper
 
 from django.shortcuts import render
 from django import template
 from django import forms
-try:
-    from django.utils.functional import update_wrapper
-except ImportError:
-    from functools import update_wrapper
 from django.conf.urls import url
 from django.conf import settings
 from django.contrib import admin, messages

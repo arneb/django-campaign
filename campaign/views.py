@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django import template, http
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render

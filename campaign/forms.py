@@ -20,7 +20,7 @@ class SubscriberListForm(forms.ModelForm):
         exclude = ()
 
     def clean(self):
-        super(SubscriberListForm, self).clean()
+        super().clean()
 
         content_type = self.cleaned_data.get("content_type")
         email_field_name = self.cleaned_data.get("email_field_name")

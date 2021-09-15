@@ -1,8 +1,5 @@
-from __future__ import unicode_literals
-
 from django import template
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
@@ -14,7 +11,6 @@ from campaign.backends import get_backend
 from campaign.signals import campaign_sent
 
 
-@python_2_unicode_compatible
 class Newsletter(models.Model):
     """
     Represents a recurring newsletter which users can subscribe to.
@@ -34,7 +30,6 @@ class Newsletter(models.Model):
         ordering = ('name',)
 
 
-@python_2_unicode_compatible
 class MailTemplate(models.Model):
     """
     Holds a template for the email. Both, HTML and plaintext, versions
@@ -58,7 +53,6 @@ class MailTemplate(models.Model):
         ordering = ('name',)
 
 
-@python_2_unicode_compatible
 class SubscriberList(models.Model):
     """
     A pointer to another Django model which holds the subscribers.
@@ -93,7 +87,6 @@ class SubscriberList(models.Model):
         ordering = ('name',)
 
 
-@python_2_unicode_compatible
 class Campaign(models.Model):
     """
     A Campaign is the central part of this app. Once a Campaign is created,
@@ -137,7 +130,6 @@ class Campaign(models.Model):
         )
 
 
-@python_2_unicode_compatible
 class BlacklistEntry(models.Model):
     """
     If a user has requested removal from the subscriber-list, he is added

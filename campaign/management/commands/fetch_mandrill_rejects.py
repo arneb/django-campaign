@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import logging
 import mandrill
 from django.conf import settings
@@ -26,15 +24,22 @@ class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         try:
             mandrill_client = mandrill.Mandrill(settings.MANDRILL_API_KEY)
-            rejects = mandrill_client.rejects.list()
+            rejects = mandrill_client.rejects.list(include_expired=True)
 
+            processed = 0
+            valid = 0
             for reject in rejects:
+                processed += 1
                 if reject['reason'] in ('hard-bounce', 'spam', 'unsub'):
                     defaults = {'reason': "%s: %s" % (reject['reason'],
                                                        reject['detail'])}
+                    valid += 1
                     BlacklistEntry.objects.get_or_create(email=reject['email'],
                                                          defaults=defaults)
 
         except mandrill.Error as e:
             logger.error('Mandrill error: %s - %s' % (e.__class__, e))
             raise e
+
+        logger.info("processed: %s" % processed)
+        logger.info("valid: %s" % valid)
