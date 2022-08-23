@@ -70,7 +70,7 @@ class SubscriberList(models.Model):
         # simplejson likes to put unicode objects as dictionary keys
         # but keyword arguments must be str type
         fc = {}
-        for k,v in self.filter_condition.items():
+        for k, v in self.filter_condition.items():
             fc.update({str(k): v})
         return fc
 
@@ -109,12 +109,12 @@ class Campaign(models.Model):
     def __str__(self):
         return self.name
 
-    def send(self):
+    def send(self, subscriber_lists=None):
         """
         Sends the mails to the recipients.
         """
         backend = get_backend()
-        num_sent = backend.send_campaign(self)
+        num_sent = backend.send_campaign(self, subscriber_lists=subscriber_lists)
         self.sent = True
         self.sent_at = timezone.now()
         self.save()
