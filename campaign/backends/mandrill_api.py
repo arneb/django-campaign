@@ -57,7 +57,7 @@ class MandrillApiBackend(BaseBackend):
     will be displayed in the web-view of the newsletter.
 
     """
-    def send_campaign(self, campaign, fail_silently=False):
+    def send_campaign(self, campaign, subscriber_lists=None, fail_silently=False, **kwargs):
         from campaign.models import BlacklistEntry
 
         subject = campaign.template.subject
@@ -70,7 +70,7 @@ class MandrillApiBackend(BaseBackend):
         recipients = []
         merge_vars = []
 
-        for recipient_list in campaign.recipients.all():
+        for recipient_list in subscriber_lists or campaign.recipients.all():
             for recipient in recipient_list.object_list():
                 # never send mail to blacklisted email addresses
                 recipient_email = getattr(recipient, recipient_list.email_field_name)

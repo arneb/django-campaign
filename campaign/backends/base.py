@@ -7,12 +7,13 @@ from django.urls import reverse
 from django.contrib.sites.models import Site
 from campaign.context import MailContext
 
+
 class BaseBackend(object):
     """base backend for all campaign backends"""
 
     context_class = MailContext
 
-    def send_campaign(self, campaign, fail_silently=False):
+    def send_campaign(self, campaign, subscriber_lists=None, fail_silently=False, **kwargs):
         """
         Does the actual work
         """
@@ -27,7 +28,7 @@ class BaseBackend(object):
 
         sent = 0
         used_addresses = []
-        for recipient_list in campaign.recipients.all():
+        for recipient_list in subscriber_lists or campaign.recipients.all():
             for recipient in recipient_list.object_list():
                 # never send mail to blacklisted email addresses
                 recipient_email = getattr(recipient, recipient_list.email_field_name)

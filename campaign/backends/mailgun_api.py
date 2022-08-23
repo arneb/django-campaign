@@ -78,7 +78,7 @@ class MailgunApiBackend(BaseBackend):
     """
     BATCH_SIZE = 1000
 
-    def send_campaign(self, campaign, fail_silently=False):
+    def send_campaign(self, campaign, subscriber_lists=None, fail_silently=False, **kwargs):
         from campaign.models import BlacklistEntry
 
         subject = campaign.template.subject
@@ -92,7 +92,7 @@ class MailgunApiBackend(BaseBackend):
         recipients = []
         recipient_vars = {}
 
-        for recipient_list in campaign.recipients.all():
+        for recipient_list in subscriber_lists or campaign.recipients.all():
             for recipient in recipient_list.object_list():
                 # never send mail to blacklisted email addresses
                 recipient_email = getattr(recipient, recipient_list.email_field_name)
