@@ -1,20 +1,19 @@
 from functools import update_wrapper
 
-from django.shortcuts import render
-from django import template
 from django import forms
-from django.conf.urls import url
 from django.conf import settings
+from django.conf.urls import url
 from django.contrib import admin, messages
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.admin.utils import unquote
 from django.contrib.admin.options import IS_POPUP_VAR
+from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
-from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext as _
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render
 from django.utils.encoding import force_text
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 
 from campaign.forms import SubscriberListForm
 from campaign.models import (
@@ -23,8 +22,8 @@ from campaign.models import (
 
 
 class CampaignAdmin(admin.ModelAdmin):
-    filter_horizontal=('recipients',)
-    list_display=('name', 'newsletter', 'sent', 'sent_at', 'online')
+    filter_horizontal = ('recipients',)
+    list_display = ('name', 'newsletter', 'sent', 'sent_at', 'online')
     change_form_template = "admin/campaign/campaign/change_form.html"
     send_template = None
 
@@ -109,7 +108,7 @@ class CampaignAdmin(admin.ModelAdmin):
 
 
 class BlacklistEntryAdmin(admin.ModelAdmin):
-    list_display=('email', 'added')
+    list_display = ('email', 'added')
     changelist_template = "admin/campaign/blacklistentry/change_list.html"
 
     def fetch_mandrill_rejects(self, request):

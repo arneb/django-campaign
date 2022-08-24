@@ -83,3 +83,14 @@ Default: ``None``
 Please see CAMPAIGN_SUBSCRIBE_CALLBACK_ above and replace subscribe with
 unsubscribe.
 
+
+CAMPAIGN_CUSTOM_SUBSCRIBER_LISTS
+-----------------------------
+
+Default: ``None``
+
+SubscriberLists custom_list field uses set choices from CAMPAIGN_CUSTOM_SUBSCRIBER_LISTS as alternative way to declare subscribers.
+
+Example settings.py::
+
+    CAMPAIGN_CUSTOM_SUBSCRIBER_LISTS = [("myproject.newsletter.recipients.CustomRecipientList", "Custom recipient List"),]

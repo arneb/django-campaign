@@ -1,12 +1,12 @@
-from django import template
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from django.core.mail import EmailMultiAlternatives
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.conf import settings
+from django.utils.module_loading import import_string
+
 from campaign.fields import JSONField
-from campaign.context import MailContext
 from campaign.backends import get_backend
 from campaign.signals import campaign_sent
 
@@ -59,9 +59,10 @@ class SubscriberList(models.Model):
 
     """
     name = models.CharField(_("Name"), max_length=255)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, verbose_name=ContentType._meta.verbose_name)
-    filter_condition = JSONField(default="{}", help_text=_("Django ORM compatible lookup kwargs which are used to get the list of objects."))
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, verbose_name=ContentType._meta.verbose_name, null=True, blank=True)
+    filter_condition = JSONField(default="{}", help_text=_("Django ORM compatible lookup kwargs which are used to get the list of objects."), null=True, blank=True)
     email_field_name = models.CharField(_("Email-Field name"), max_length=64, help_text=_("Name of the model field which stores the recipients email address"))
+    custom_list = models.CharField(choices=settings.get('CAMPAIGN_CUSTOM_SUBSCRIBER_LISTS', []), null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -75,11 +76,17 @@ class SubscriberList(models.Model):
         return fc
 
     def object_list(self):
-        return self.content_type.model_class()._default_manager.filter(
-            **self._get_filter()).distinct()
+        if self.custom_list:
+            return import_string(self.custom_list)().object_list()
+        else:
+            return self.content_type.model_class()._default_manager.filter(
+                **self._get_filter()).distinct()
 
     def object_count(self):
-        return self.object_list().count()
+        if self.custom_list:
+            return import_string(self.custom_list)().object_count()
+        else:
+            return self.object_list().count()
 
     class Meta:
         verbose_name = _("subscriber list")
