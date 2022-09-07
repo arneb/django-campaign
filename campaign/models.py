@@ -62,7 +62,7 @@ class SubscriberList(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, verbose_name=ContentType._meta.verbose_name, null=True, blank=True)
     filter_condition = JSONField(default="{}", help_text=_("Django ORM compatible lookup kwargs which are used to get the list of objects."), null=True, blank=True)
     email_field_name = models.CharField(_("Email-Field name"), max_length=64, help_text=_("Name of the model field which stores the recipients email address"))
-    custom_list = models.CharField(choices=settings.get('CAMPAIGN_CUSTOM_SUBSCRIBER_LISTS', []), null=True, blank=True)
+    custom_list = models.CharField(max_length=255, choices=getattr(settings, 'CAMPAIGN_CUSTOM_SUBSCRIBER_LISTS', []), null=True, blank=True)
 
     def __str__(self):
         return self.name
