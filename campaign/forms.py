@@ -32,7 +32,7 @@ class SubscriberListForm(forms.ModelForm):
             self.add_error(None, _("Either custom_list or content_type and filter_condition must be set"))
 
         if custom_list:  # Check if the defined module does exist and can be initialized, if not throw a hard exception instead of only adding an error
-            import_string(self.custom_list)()
+            import_string(custom_list)()
         else:
             Model = content_type.model_class()
 
