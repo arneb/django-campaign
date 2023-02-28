@@ -13,7 +13,7 @@ from django.shortcuts import render
 from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from campaign.forms import SubscriberListForm
 from campaign.models import (
