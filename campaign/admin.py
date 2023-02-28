@@ -2,7 +2,6 @@ from functools import update_wrapper
 
 from django import forms
 from django.conf import settings
-from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin.options import IS_POPUP_VAR
 from django.contrib.admin.utils import unquote
@@ -10,6 +9,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import re_path
 from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -98,7 +98,7 @@ class CampaignAdmin(admin.ModelAdmin):
 
         super_urlpatterns = super(CampaignAdmin, self).get_urls()
         urlpatterns = [
-            url(r'^(.+)/send/$',
+            re_path(r'^(.+)/send/$',
                 wrap(self.send_view),
                 name='%s_%s_send' % info),
         ]
@@ -129,7 +129,7 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
 
         super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
         urlpatterns = [
-            url(r'^fetch_mandrill_rejects/$',
+            re_path(r'^fetch_mandrill_rejects/$',
                 wrap(self.fetch_mandrill_rejects),
                 name='%s_%s_fetchmandrillrejects' % info),
         ]
@@ -188,7 +188,7 @@ class SubscriberListAdmin(admin.ModelAdmin):
 
         super_urlpatterns = super(SubscriberListAdmin, self).get_urls()
         urlpatterns = [
-            url(r'^(.+)/preview/$',
+            re_path(r'^(.+)/preview/$',
                 wrap(self.preview_view),
                 name='%s_%s_preview' % info),
         ]
