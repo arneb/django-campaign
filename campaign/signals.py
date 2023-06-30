@@ -1,4 +1,4 @@
 from django.dispatch import Signal
 
-
-campaign_sent = Signal(providing_args=["campaign"])
+# "campaign" Signal
+campaign_sent = Signal()

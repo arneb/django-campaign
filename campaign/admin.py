@@ -2,7 +2,6 @@ from functools import update_wrapper
 
 from django import forms
 from django.conf import settings
-from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin.options import IS_POPUP_VAR
 from django.contrib.admin.utils import unquote
@@ -10,10 +9,11 @@ from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.encoding import force_text
+from django.urls import re_path
+from django.utils.encoding import force_str
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from campaign.forms import SubscriberListForm
 from campaign.models import (
@@ -53,14 +53,14 @@ class CampaignAdmin(admin.ModelAdmin):
             raise PermissionDenied
 
         if obj is None:
-            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_text(opts.verbose_name), 'key': escape(object_id)})
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_str(opts.verbose_name), 'key': escape(object_id)})
 
         if request.method == 'POST':
             if not request.POST.get('send', None) == '1':
                 raise PermissionDenied
 
             num_sent = obj.send()
-            messages.success(request, _('The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_text(opts.verbose_name), 'obj': force_text(obj), 'num_sent': num_sent,}))
+            messages.success(request, _('The %(name)s "%(obj)s" was successfully sent. %(num_sent)s messages delivered.' %  {'name': force_str(opts.verbose_name), 'obj': force_str(obj), 'num_sent': num_sent,}))
             return HttpResponseRedirect('../')
 
 
@@ -71,7 +71,7 @@ class CampaignAdmin(admin.ModelAdmin):
         media = self.media + form_media()
 
         context = {
-            'title': _('Send %s') % force_text(opts.verbose_name),
+            'title': _('Send %s') % force_str(opts.verbose_name),
             'object_id': object_id,
             'object': obj,
             'is_popup': (IS_POPUP_VAR in request.POST or IS_POPUP_VAR in request.GET),
@@ -98,7 +98,7 @@ class CampaignAdmin(admin.ModelAdmin):
 
         super_urlpatterns = super(CampaignAdmin, self).get_urls()
         urlpatterns = [
-            url(r'^(.+)/send/$',
+            re_path(r'^(.+)/send/$',
                 wrap(self.send_view),
                 name='%s_%s_send' % info),
         ]
@@ -129,7 +129,7 @@ class BlacklistEntryAdmin(admin.ModelAdmin):
 
         super_urlpatterns = super(BlacklistEntryAdmin, self).get_urls()
         urlpatterns = [
-            url(r'^fetch_mandrill_rejects/$',
+            re_path(r'^fetch_mandrill_rejects/$',
                 wrap(self.fetch_mandrill_rejects),
                 name='%s_%s_fetchmandrillrejects' % info),
         ]
@@ -159,10 +159,10 @@ class SubscriberListAdmin(admin.ModelAdmin):
             obj = None
 
         if obj is None:
-            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_text(opts.verbose_name), 'key': escape(object_id)})
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_str(opts.verbose_name), 'key': escape(object_id)})
 
         context = {
-            'title': _('Preview %s') % force_text(opts.verbose_name),
+            'title': _('Preview %s') % force_str(opts.verbose_name),
             'object_id': object_id,
             'object': obj,
             'is_popup': (IS_POPUP_VAR in request.POST or IS_POPUP_VAR in request.GET),
@@ -188,7 +188,7 @@ class SubscriberListAdmin(admin.ModelAdmin):
 
         super_urlpatterns = super(SubscriberListAdmin, self).get_urls()
         urlpatterns = [
-            url(r'^(.+)/preview/$',
+            re_path(r'^(.+)/preview/$',
                 wrap(self.preview_view),
                 name='%s_%s_preview' % info),
         ]
