@@ -20,6 +20,8 @@ class Newsletter(models.Model):
     description = models.TextField(_("Description"), blank=True, null=True)
     from_email = models.EmailField(_("Sending Address"), blank=True, null=True)
     from_name = models.CharField(_("Sender Name"), max_length=255, blank=True, null=True)
+    site = models.ForeignKey(Site, verbose_name=_("Site"), on_delete=models.SET_NULL, blank=True, null=True)
+    default = models.BooleanField(_("Default"), default=False)
 
     def __str__(self):
         return self.name
