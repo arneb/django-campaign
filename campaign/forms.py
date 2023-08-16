@@ -46,7 +46,7 @@ class SubscriberListForm(forms.ModelForm):
 
             try:
                 Model._default_manager.filter(**{str(k): v for k, v in filter_condition.items()})
-            except FieldError:
+            except (FieldError, AttributeError):
                 self.add_error(
                     "filter_condition",
                     _("Could not query %s with this filter") % ContentType._meta.verbose_name
