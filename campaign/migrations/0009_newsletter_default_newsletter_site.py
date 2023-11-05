@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('sites', '0002_alter_domain_unique'),
-        ('campaign', '0008_auto_20220907_2025.py'),
+        ('campaign', '0008_auto_20220907_2025'),
     ]
 
     operations = [
